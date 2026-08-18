@@ -36,6 +36,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@netlify/vite-plugin-tanstack-start": "^1.3.17",
     "@tailwindcss/vite": "^4.2.2",
     "@types/luxon": "^3.7.4",
     "@types/node": "^22.5.4",
