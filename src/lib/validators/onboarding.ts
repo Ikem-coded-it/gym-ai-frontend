@@ -20,9 +20,9 @@ export type ScheduleFormData = z.infer<typeof scheduleSchema>
 
 export const manualExerciseSchema = z.object({
   name: z.string().min(1, 'Exercise name is required'),
-  sets: z.coerce.number().min(1, 'Sets must be at least 1'),
+  sets: z.number().min(1, 'Sets must be at least 1'),
   reps: z.string().min(1, 'Reps are required'),
-  weightKg: z.coerce.number().min(0, 'Weight must be 0 or more'),
+  weightKg: z.number().min(0, 'Weight must be 0 or more'),
   equipment: z.string().min(1, 'Equipment is required'),
 })
 

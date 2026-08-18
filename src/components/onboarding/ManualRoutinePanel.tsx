@@ -72,7 +72,7 @@ export default function ManualRoutinePanel({
               type="number"
               placeholder="3"
               error={errors.sets}
-              registration={register('sets')}
+              registration={register('sets', { valueAsNumber: true })}
             />
             <AuthFormField
               id="reps"
@@ -90,7 +90,7 @@ export default function ManualRoutinePanel({
               type="number"
               placeholder="60"
               error={errors.weightKg}
-              registration={register('weightKg')}
+              registration={register('weightKg', { valueAsNumber: true })}
             />
             <AuthFormField
               id="equipment"
