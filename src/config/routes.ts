@@ -14,6 +14,10 @@ const ApplicationRoutes = {
     },
     DASHBOARD: {
         index: '/dashboard',
+        AI_COACH: '/dashboard/ai-coach',
+        HISTORY: '/dashboard/history',
+        PROFILE: '/dashboard/profile',
+        WORKOUT_DETAIL: '/dashboard/workout/$workoutId',
     },
 }
 

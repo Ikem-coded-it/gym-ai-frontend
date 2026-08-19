@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PathlessLayoutRouteImport } from './routes/_pathlessLayout'
 import { Route as CustomScriptDotjsRouteImport } from './routes/customScript[.]js'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DeferredRouteImport } from './routes/deferred'
 import { Route as PostsRouteImport } from './routes/posts'
 import { Route as RedirectRouteImport } from './routes/redirect'
@@ -23,6 +24,9 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardAiCoachRouteImport } from './routes/dashboard/ai-coach'
+import { Route as DashboardHistoryRouteImport } from './routes/dashboard/history'
+import { Route as DashboardProfileRouteImport } from './routes/dashboard/profile'
 import { Route as OnboardingRoutineRouteImport } from './routes/onboarding/routine'
 import { Route as OnboardingScheduleRouteImport } from './routes/onboarding/schedule'
 import { Route as PostsIndexRouteImport } from './routes/posts.index'
@@ -32,6 +36,7 @@ import { Route as UsersUserIdRouteImport } from './routes/users.$userId'
 import { Route as PathlessLayoutNestedLayoutRouteARouteImport } from './routes/_pathlessLayout/_nested-layout/route-a'
 import { Route as PathlessLayoutNestedLayoutRouteBRouteImport } from './routes/_pathlessLayout/_nested-layout/route-b'
 import { Route as ApiUsersUserIdRouteImport } from './routes/api/users.$userId'
+import { Route as DashboardWorkoutWorkoutIdRouteImport } from './routes/dashboard/workout.$workoutId'
 import { Route as OnboardingRoutineIndexRouteImport } from './routes/onboarding/routine.index'
 import { Route as OnboardingRoutineAiResultRouteImport } from './routes/onboarding/routine.ai-result'
 import { Route as PostsPostIdDeepRouteImport } from './routes/posts_.$postId.deep'
@@ -48,6 +53,11 @@ const PathlessLayoutRoute = PathlessLayoutRouteImport.update({
 const CustomScriptDotjsRoute = CustomScriptDotjsRouteImport.update({
   id: '/customScript.js',
   path: '/customScript.js',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DeferredRoute = DeferredRouteImport.update({
@@ -101,9 +111,24 @@ const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAiCoachRoute = DashboardAiCoachRouteImport.update({
+  id: '/ai-coach',
+  path: '/ai-coach',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardHistoryRoute = DashboardHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProfileRoute = DashboardProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const OnboardingRoutineRoute = OnboardingRoutineRouteImport.update({
   id: '/onboarding/routine',
@@ -152,6 +177,12 @@ const ApiUsersUserIdRoute = ApiUsersUserIdRouteImport.update({
   path: '/$userId',
   getParentRoute: () => ApiUsersRoute,
 } as any)
+const DashboardWorkoutWorkoutIdRoute =
+  DashboardWorkoutWorkoutIdRouteImport.update({
+    id: '/workout/$workoutId',
+    path: '/workout/$workoutId',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const OnboardingRoutineIndexRoute = OnboardingRoutineIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -172,6 +203,7 @@ const PostsPostIdDeepRoute = PostsPostIdDeepRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/customScript.js': typeof CustomScriptDotjsRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/deferred': typeof DeferredRoute
   '/posts': typeof PostsRouteWithChildren
   '/redirect': typeof RedirectRoute
@@ -181,6 +213,9 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
+  '/dashboard/ai-coach': typeof DashboardAiCoachRoute
+  '/dashboard/history': typeof DashboardHistoryRoute
+  '/dashboard/profile': typeof DashboardProfileRoute
   '/onboarding/routine': typeof OnboardingRoutineRouteWithChildren
   '/onboarding/schedule': typeof OnboardingScheduleRoute
   '/posts/$postId': typeof PostsPostIdRoute
@@ -191,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/route-a': typeof PathlessLayoutNestedLayoutRouteARoute
   '/route-b': typeof PathlessLayoutNestedLayoutRouteBRoute
   '/api/users/$userId': typeof ApiUsersUserIdRoute
+  '/dashboard/workout/$workoutId': typeof DashboardWorkoutWorkoutIdRoute
   '/onboarding/routine/ai-result': typeof OnboardingRoutineAiResultRoute
   '/posts/$postId/deep': typeof PostsPostIdDeepRoute
   '/onboarding/routine/': typeof OnboardingRoutineIndexRoute
@@ -205,6 +241,9 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
+  '/dashboard/ai-coach': typeof DashboardAiCoachRoute
+  '/dashboard/history': typeof DashboardHistoryRoute
+  '/dashboard/profile': typeof DashboardProfileRoute
   '/onboarding/schedule': typeof OnboardingScheduleRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/users/$userId': typeof UsersUserIdRoute
@@ -214,6 +253,7 @@ export interface FileRoutesByTo {
   '/route-a': typeof PathlessLayoutNestedLayoutRouteARoute
   '/route-b': typeof PathlessLayoutNestedLayoutRouteBRoute
   '/api/users/$userId': typeof ApiUsersUserIdRoute
+  '/dashboard/workout/$workoutId': typeof DashboardWorkoutWorkoutIdRoute
   '/onboarding/routine/ai-result': typeof OnboardingRoutineAiResultRoute
   '/posts/$postId/deep': typeof PostsPostIdDeepRoute
   '/onboarding/routine': typeof OnboardingRoutineIndexRoute
@@ -223,6 +263,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_pathlessLayout': typeof PathlessLayoutRouteWithChildren
   '/customScript.js': typeof CustomScriptDotjsRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/deferred': typeof DeferredRoute
   '/posts': typeof PostsRouteWithChildren
   '/redirect': typeof RedirectRoute
@@ -233,6 +274,9 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
+  '/dashboard/ai-coach': typeof DashboardAiCoachRoute
+  '/dashboard/history': typeof DashboardHistoryRoute
+  '/dashboard/profile': typeof DashboardProfileRoute
   '/onboarding/routine': typeof OnboardingRoutineRouteWithChildren
   '/onboarding/schedule': typeof OnboardingScheduleRoute
   '/posts/$postId': typeof PostsPostIdRoute
@@ -243,6 +287,7 @@ export interface FileRoutesById {
   '/_pathlessLayout/_nested-layout/route-a': typeof PathlessLayoutNestedLayoutRouteARoute
   '/_pathlessLayout/_nested-layout/route-b': typeof PathlessLayoutNestedLayoutRouteBRoute
   '/api/users/$userId': typeof ApiUsersUserIdRoute
+  '/dashboard/workout/$workoutId': typeof DashboardWorkoutWorkoutIdRoute
   '/onboarding/routine/ai-result': typeof OnboardingRoutineAiResultRoute
   '/posts_/$postId/deep': typeof PostsPostIdDeepRoute
   '/onboarding/routine/': typeof OnboardingRoutineIndexRoute
@@ -252,6 +297,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/customScript.js'
+    | '/dashboard'
     | '/deferred'
     | '/posts'
     | '/redirect'
@@ -261,6 +307,9 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/auth/verify-email'
+    | '/dashboard/ai-coach'
+    | '/dashboard/history'
+    | '/dashboard/profile'
     | '/onboarding/routine'
     | '/onboarding/schedule'
     | '/posts/$postId'
@@ -271,6 +320,7 @@ export interface FileRouteTypes {
     | '/route-a'
     | '/route-b'
     | '/api/users/$userId'
+    | '/dashboard/workout/$workoutId'
     | '/onboarding/routine/ai-result'
     | '/posts/$postId/deep'
     | '/onboarding/routine/'
@@ -285,6 +335,9 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/auth/verify-email'
+    | '/dashboard/ai-coach'
+    | '/dashboard/history'
+    | '/dashboard/profile'
     | '/onboarding/schedule'
     | '/posts/$postId'
     | '/users/$userId'
@@ -294,6 +347,7 @@ export interface FileRouteTypes {
     | '/route-a'
     | '/route-b'
     | '/api/users/$userId'
+    | '/dashboard/workout/$workoutId'
     | '/onboarding/routine/ai-result'
     | '/posts/$postId/deep'
     | '/onboarding/routine'
@@ -302,6 +356,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_pathlessLayout'
     | '/customScript.js'
+    | '/dashboard'
     | '/deferred'
     | '/posts'
     | '/redirect'
@@ -312,6 +367,9 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/auth/verify-email'
+    | '/dashboard/ai-coach'
+    | '/dashboard/history'
+    | '/dashboard/profile'
     | '/onboarding/routine'
     | '/onboarding/schedule'
     | '/posts/$postId'
@@ -322,6 +380,7 @@ export interface FileRouteTypes {
     | '/_pathlessLayout/_nested-layout/route-a'
     | '/_pathlessLayout/_nested-layout/route-b'
     | '/api/users/$userId'
+    | '/dashboard/workout/$workoutId'
     | '/onboarding/routine/ai-result'
     | '/posts_/$postId/deep'
     | '/onboarding/routine/'
@@ -331,6 +390,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PathlessLayoutRoute: typeof PathlessLayoutRouteWithChildren
   CustomScriptDotjsRoute: typeof CustomScriptDotjsRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   DeferredRoute: typeof DeferredRoute
   PostsRoute: typeof PostsRouteWithChildren
   RedirectRoute: typeof RedirectRoute
@@ -342,7 +402,6 @@ export interface RootRouteChildren {
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   OnboardingRoutineRoute: typeof OnboardingRoutineRouteWithChildren
   OnboardingScheduleRoute: typeof OnboardingScheduleRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
   PostsPostIdDeepRoute: typeof PostsPostIdDeepRoute
 }
 
@@ -367,6 +426,13 @@ declare module '@tanstack/react-router' {
       path: '/customScript.js'
       fullPath: '/customScript.js'
       preLoaderRoute: typeof CustomScriptDotjsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/deferred': {
@@ -441,10 +507,31 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/': {
       id: '/dashboard/'
-      path: '/dashboard'
+      path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/ai-coach': {
+      id: '/dashboard/ai-coach'
+      path: '/ai-coach'
+      fullPath: '/dashboard/ai-coach'
+      preLoaderRoute: typeof DashboardAiCoachRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/history': {
+      id: '/dashboard/history'
+      path: '/history'
+      fullPath: '/dashboard/history'
+      preLoaderRoute: typeof DashboardHistoryRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/profile': {
+      id: '/dashboard/profile'
+      path: '/profile'
+      fullPath: '/dashboard/profile'
+      preLoaderRoute: typeof DashboardProfileRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/onboarding/routine': {
       id: '/onboarding/routine'
@@ -509,6 +596,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiUsersUserIdRouteImport
       parentRoute: typeof ApiUsersRoute
     }
+    '/dashboard/workout/$workoutId': {
+      id: '/dashboard/workout/$workoutId'
+      path: '/workout/$workoutId'
+      fullPath: '/dashboard/workout/$workoutId'
+      preLoaderRoute: typeof DashboardWorkoutWorkoutIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/onboarding/routine/': {
       id: '/onboarding/routine/'
       path: '/'
@@ -561,6 +655,26 @@ const PathlessLayoutRouteChildren: PathlessLayoutRouteChildren = {
 
 const PathlessLayoutRouteWithChildren = PathlessLayoutRoute._addFileChildren(
   PathlessLayoutRouteChildren,
+)
+
+interface DashboardRouteChildren {
+  DashboardAiCoachRoute: typeof DashboardAiCoachRoute
+  DashboardHistoryRoute: typeof DashboardHistoryRoute
+  DashboardProfileRoute: typeof DashboardProfileRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardWorkoutWorkoutIdRoute: typeof DashboardWorkoutWorkoutIdRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAiCoachRoute: DashboardAiCoachRoute,
+  DashboardHistoryRoute: DashboardHistoryRoute,
+  DashboardProfileRoute: DashboardProfileRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardWorkoutWorkoutIdRoute: DashboardWorkoutWorkoutIdRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
 )
 
 interface PostsRouteChildren {
@@ -616,6 +730,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PathlessLayoutRoute: PathlessLayoutRouteWithChildren,
   CustomScriptDotjsRoute: CustomScriptDotjsRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   DeferredRoute: DeferredRoute,
   PostsRoute: PostsRouteWithChildren,
   RedirectRoute: RedirectRoute,
@@ -627,7 +742,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   OnboardingRoutineRoute: OnboardingRoutineRouteWithChildren,
   OnboardingScheduleRoute: OnboardingScheduleRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
   PostsPostIdDeepRoute: PostsPostIdDeepRoute,
 }
 export const routeTree = rootRouteImport
