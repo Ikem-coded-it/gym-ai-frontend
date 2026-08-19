@@ -20,3 +20,4 @@ yarn.lock
 .tanstack
 # Local Netlify folder
 .netlify
+dist
