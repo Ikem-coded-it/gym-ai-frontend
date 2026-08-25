@@ -1,4 +1,4 @@
-import { getAuthToken, clearAuthState } from "../utils/auth";
+import { getAuthToken, clearAuthState } from "../utils/auth-token";
 import ApplicationRoutes from "../config/routes";
 import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
@@ -10,7 +10,30 @@ import {
 
 /* --- CONFIGURATION --- */
 
-const BASE_URL = process.env.BASE_API_URL || "";
+const BASE_URL = import.meta.env.VITE_BASE_API_URL || "";
+
+function resolveRequestUrl(endpoint: string, baseURL: string): URL {
+  if (/^https?:\/\//i.test(endpoint)) {
+    return new URL(endpoint);
+  }
+
+  const base = baseURL.endsWith("/") ? baseURL : `${baseURL}/`;
+  const path = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
+  return new URL(path, base);
+}
+
+function getApiErrorMessage(data: any, fallback: string): string {
+  const detail = data?.detail;
+  if (typeof detail === "string" && detail.trim()) {
+    return detail;
+  }
+  if (Array.isArray(detail) && detail.length > 0) {
+    const first = detail[0];
+    if (typeof first === "string" && first.trim()) return first;
+    if (typeof first?.msg === "string" && first.msg.trim()) return first.msg;
+  }
+  return data?.errors?.[0]?.message ?? data?.message ?? fallback;
+}
 
 const DEFAULT_HEADERS = {
   "Content-Type": "application/json",
@@ -82,7 +105,7 @@ export const handleResponseError = async (error: HttpError | any) => {
     /** Auth flows that may return 401 without meaning “session expired” — never redirect away. */
     if (
       requestUrl.includes("/auth/login") ||
-      requestUrl.includes("/auth/register") ||
+      requestUrl.includes("/auth/signup") ||
       requestUrl.includes("/auth/verify-email") ||
       requestUrl.includes("/auth/resend-verification-email") ||
       requestUrl.includes("/auth/forgot-password")
@@ -139,7 +162,7 @@ const $http = async <T = any>(
   });
 
   // Construct URL with Query Params
-  const url = new URL(endpoint, finalConfig.baseURL || BASE_URL);
+  const url = resolveRequestUrl(endpoint, finalConfig.baseURL || BASE_URL);
   if (finalConfig.params) {
     Object.entries(finalConfig.params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
@@ -186,7 +209,7 @@ const $http = async <T = any>(
     // If status is not 2xx, throw an error that mimics AxiosError
     if (!response.ok) {
       const error = new Error(
-        responseData?.message || response.statusText
+        getApiErrorMessage(responseData, response.statusText)
       ) as HttpError;
       error.response = result;
       error.config = finalConfig;
@@ -210,11 +233,10 @@ const $http = async <T = any>(
 
 // Helper to extract error messages (Legacy compatibility)
 export const getHttpErrorMessage = (error: any): never => {
-  const errorMessage =
-    error?.response?.data?.errors?.[0]?.message ??
-    error?.response?.data?.message ??
-    error?.message ??
-    "Something went wrong";
+  const errorMessage = getApiErrorMessage(
+    error?.response?.data,
+    error?.message ?? "Something went wrong"
+  );
 
   const code =
     error?.response?.data?.code ??

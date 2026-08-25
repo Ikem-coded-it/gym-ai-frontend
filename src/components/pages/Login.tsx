@@ -1,27 +1,33 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import AuthDivider from '~/components/auth/AuthDivider'
 import AuthFormField from '~/components/auth/AuthFormField'
 import GoogleAuthButton from '~/components/auth/GoogleAuthButton'
 import { Button } from '~/components/ui/button'
 import ApplicationRoutes from '~/config/routes'
+import type { ILoginPayload } from '~/lib/interfaces/auth'
 import {
   loginSchema,
   type LoginFormData,
 } from '~/lib/validators/auth'
+import authService from '~/services/auth.service'
 import useAuthStore from '~/store/zustand/auth.zustand'
+import { saveAccessToken } from '~/utils/auth-token'
 
 export default function Login() {
   const navigate = useNavigate()
   const userEmail = useAuthStore((state) => state.userEmail)
   const updateEmail = useAuthStore((state) => state.updateEmail)
   const updateIsLoggedIn = useAuthStore((state) => state.updateIsLoggedIn)
+  const updateAuthToken = useAuthStore((state) => state.updateAuthToken)
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -30,11 +36,33 @@ export default function Login() {
     },
   })
 
-  const onSubmit = handleSubmit(async (data) => {
-    updateEmail(data.email)
-    updateIsLoggedIn(true)
-    navigate({ to: ApplicationRoutes.ONBOARDING.SCHEDULE })
+  const loginMutation = useMutation({
+    mutationFn: (payload: ILoginPayload) => authService.login(payload),
+    onSuccess: (data, variables) => {
+      saveAccessToken(data.access_token)
+      updateAuthToken(data.access_token)
+      updateEmail(variables.email)
+      updateIsLoggedIn(true)
+      toast.success('Welcome back!')
+      navigate({ to: ApplicationRoutes.ONBOARDING.SCHEDULE })
+    },
+    onError: (error: Error) => {
+      console.log("Login error:", error)
+      toast.error(error.message)
+    },
   })
+
+  const submitLogin = handleSubmit((data) => {
+    loginMutation.mutate({
+      email: data.email,
+      password: data.password,
+    })
+  })
+
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    void submitLogin(event)
+  }
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-[#F5F5F5] px-4 py-8">
@@ -52,7 +80,7 @@ export default function Login() {
 
         <AuthDivider>or</AuthDivider>
 
-        <form onSubmit={onSubmit} className="space-y-6">
+        <form onSubmit={onSubmit} noValidate className="space-y-6">
           <AuthFormField
             id="email"
             label="Email"
@@ -83,10 +111,10 @@ export default function Login() {
 
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={loginMutation.isPending}
             className="h-12 w-full rounded-lg bg-blue-600 text-base text-white hover:bg-blue-700"
           >
-            Login
+            {loginMutation.isPending ? 'Signing in...' : 'Login'}
           </Button>
         </form>
 

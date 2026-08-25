@@ -6,8 +6,10 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import * as React from 'react'
+import AppProviders from '~/components/global/AppProviders'
 import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary'
 import { NotFound } from '~/components/NotFound'
+import { Toaster } from '~/components/ui/sonner'
 import appCss from '~/styles/app.css?url'
 import { seo } from '~/utils/seo'
 
@@ -78,8 +80,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
-        <TanStackRouterDevtools position="bottom-right" />
+        <AppProviders>
+          {children}
+          <Toaster richColors toastOptions={{duration: 3000}}/>
+          <TanStackRouterDevtools position="bottom-right" />
+        </AppProviders>
         <Scripts />
       </body>
     </html>

@@ -1,16 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight } from '@phosphor-icons/react'
+import { useMutation } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
-import AuthDivider from '~/components/auth/AuthDivider'
+import { toast } from 'sonner'
 import AuthFormField from '~/components/auth/AuthFormField'
 import GoogleAuthButton from '~/components/auth/GoogleAuthButton'
 import { Button } from '~/components/ui/button'
 import ApplicationRoutes from '~/config/routes'
+import type { ISignupPayload } from '~/lib/interfaces/auth'
 import {
   signupSchema,
   type SignupFormData,
 } from '~/lib/validators/auth'
+import authService from '~/services/auth.service'
 import useAuthStore from '~/store/zustand/auth.zustand'
 
 export default function Register() {
@@ -20,7 +23,7 @@ export default function Register() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -32,10 +35,31 @@ export default function Register() {
     },
   })
 
-  const onSubmit = handleSubmit(async (data) => {
-    updateEmail(data.email)
-    navigate({ to: ApplicationRoutes.AUTH.VERIFY_EMAIL })
+  const signupMutation = useMutation({
+    mutationFn: (payload: ISignupPayload) => authService.signup(payload),
+    onSuccess: (_data, variables) => {
+      toast.success('Account created! Please sign in.')
+      updateEmail(variables.email)
+      navigate({ to: ApplicationRoutes.AUTH.LOGIN })
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
   })
+
+  const submitSignup = handleSubmit((data) => {
+    signupMutation.mutate({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      password: data.password,
+    })
+  })
+
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    void submitSignup(event)
+  }
 
   return (
     <div className="min-h-dvh bg-[#F5F5F5] px-4 py-8">
@@ -71,7 +95,7 @@ export default function Register() {
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <form onSubmit={onSubmit} className="space-y-6">
+          <form onSubmit={onSubmit} noValidate className="space-y-6">
             <AuthFormField
               id="firstName"
               label="First name"
@@ -117,10 +141,10 @@ export default function Register() {
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={signupMutation.isPending}
               className="h-12 w-full rounded-lg bg-blue-600 text-base text-white hover:bg-blue-700"
             >
-              Create Account
+              {signupMutation.isPending ? 'Creating account...' : 'Create Account'}
               <ArrowRight weight="bold" className="size-4" />
             </Button>
           </form>

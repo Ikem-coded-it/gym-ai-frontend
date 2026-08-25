@@ -80,6 +80,31 @@ export default class ApiService {
     }
   }
 
+  static async postUrlEncoded<T>(
+    url: string,
+    data: Record<string, string>,
+    config?: FetchRequestConfig,
+  ): Promise<T> {
+    try {
+      const response = await $http.request<T>(url, {
+        ...config,
+        method: 'POST',
+        body: new URLSearchParams(data).toString(),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          ...config?.headers,
+        },
+      });
+
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error(`Failed to post data to ${url}`);
+      }
+      return response.data;
+    } catch (error) {
+      throw getHttpErrorMessage(error);
+    }
+  }
+
   static async formData<T>(
     method: 'POST' | 'PUT' | 'PATCH',
     url: string,

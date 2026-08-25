@@ -1,3 +1,5 @@
+import { Eye, EyeSlash } from '@phosphor-icons/react'
+import { useState } from 'react'
 import type {
   FieldError as RHFFieldError,
   UseFormRegisterReturn,
@@ -27,6 +29,10 @@ export default function AuthFormField({
   error,
   registration,
 }: AuthFormFieldProps) {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+  const isPasswordField = type === 'password'
+  const inputType = isPasswordField && isPasswordVisible ? 'text' : type
+
   return (
     <Field data-invalid={!!error}>
       <FieldLabel
@@ -35,18 +41,35 @@ export default function AuthFormField({
       >
         {label}
       </FieldLabel>
-      <Input
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        aria-invalid={!!error}
-        className={cn(
-          'h-auto rounded-none border-0 border-b border-gray-200 bg-transparent px-0 py-2.5 text-base shadow-none',
-          'placeholder:text-gray-400 focus-visible:border-blue-600 focus-visible:ring-0',
-          'aria-invalid:border-destructive aria-invalid:ring-0'
+      <div className="relative">
+        <Input
+          id={id}
+          type={inputType}
+          placeholder={placeholder}
+          aria-invalid={!!error}
+          className={cn(
+            'h-auto rounded-none border-0 border-b border-gray-200 bg-transparent px-0 py-2.5 text-base shadow-none',
+            'placeholder:text-gray-400 focus-visible:border-blue-600 focus-visible:ring-0',
+            'aria-invalid:border-destructive aria-invalid:ring-0',
+            isPasswordField && 'pr-9',
+          )}
+          {...registration}
+        />
+        {isPasswordField && (
+          <button
+            type="button"
+            onClick={() => setIsPasswordVisible((visible) => !visible)}
+            aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+            className="absolute top-1/2 right-0 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-600"
+          >
+            {isPasswordVisible ? (
+              <EyeSlash weight="bold" className="size-5" />
+            ) : (
+              <Eye weight="bold" className="size-5" />
+            )}
+          </button>
         )}
-        {...registration}
-      />
+      </div>
       <FieldError errors={[error]} />
     </Field>
   )

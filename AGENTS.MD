@@ -19,6 +19,7 @@
 - Create parent route components inside /src/components/pages and import and attach them to the route in /src/routes. Do not create a route's component in the same route file
 - Create and export globally used route such as headers and navigation bar in /src/components/global
 - API calls are made in /src/services, create a new file for each API services. Example, auth.service.ts. This will contain the code for making calls to auth endpoint such as /signup, /login, /me. It will be written as a class with methods for each API call. Import and use the custom reusable HTTP methods in /src/services/api.service.ts
+- Use @tanstack/react-query useMutation and useQuery hooks in components for making API calls, import the related API service from /src/service folder and attach it as a mutationFn or queryFn 
 - Type interfaces are created in /src/lib/interfaces. Create a file for each interface class. Example /interfaces/auth.ts for auth interfaces, /interfaces/post.ts for post interfaces
 - Zod validation schemas are created in /src/lib/validators. Create a new file for each class of validation schemas. Example, /validators/auth.ts will have zod schemas for signup and login form. /validators/post.ts will contain and export schemas for create post form and edit post form.
 
