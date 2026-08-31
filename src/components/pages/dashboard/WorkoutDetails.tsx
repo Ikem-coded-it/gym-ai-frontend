@@ -1,11 +1,15 @@
 import { Play, Plus } from '@phosphor-icons/react'
+import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import WorkoutDetailsHeader from '~/components/dashboard/WorkoutDetailsHeader'
 import WorkoutExerciseCard from '~/components/dashboard/WorkoutExerciseCard'
 import { Button } from '~/components/ui/button'
+import { Spinner } from '~/components/ui/spinner'
 import ApplicationRoutes from '~/config/routes'
-import { getWorkoutDetail } from '~/lib/constants/workout'
+import { workoutQueryKeys } from '~/lib/constants/workout'
+import { findWorkoutDetail } from '~/lib/utils/workout'
+import workoutService from '~/services/workout.service'
 
 type WorkoutDetailsProps = {
   workoutId: string
@@ -13,13 +17,45 @@ type WorkoutDetailsProps = {
 
 export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
   const navigate = useNavigate()
-  const workout = getWorkoutDetail(workoutId)
+
+  const {
+    data: workouts,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: workoutQueryKeys.all,
+    queryFn: () => workoutService.getWorkouts(),
+  })
+
+  const workout = useMemo(() => {
+    if (!workouts) return undefined
+    return findWorkoutDetail(workouts, workoutId)
+  }, [workouts, workoutId])
 
   useEffect(() => {
-    if (!workout) {
+    if (!isLoading && !isError && workouts && !workout) {
       navigate({ to: ApplicationRoutes.DASHBOARD.index })
     }
-  }, [workout, navigate])
+  }, [isLoading, isError, workouts, workout, navigate])
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-[#F5F5F5]">
+        <Spinner className="size-6 text-blue-600" />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-[#F5F5F5] px-6">
+        <p className="text-sm text-destructive" role="alert">
+          {error instanceof Error ? error.message : 'Failed to load workout'}
+        </p>
+      </div>
+    )
+  }
 
   if (!workout) {
     return null
@@ -42,6 +78,12 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
           {workout.exercises.map((exercise) => (
             <WorkoutExerciseCard key={exercise.id} exercise={exercise} />
           ))}
+
+          {workout.exercises.length === 0 && (
+            <p className="text-sm text-gray-500">
+              No exercises added to this workout yet.
+            </p>
+          )}
 
           <Button
             type="button"

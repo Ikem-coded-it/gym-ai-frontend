@@ -2,7 +2,6 @@ import {
   Barbell,
   CaretRight,
   PersonSimpleWalk,
-  Play,
 } from '@phosphor-icons/react'
 import { Link } from '@tanstack/react-router'
 import { Card, CardContent, CardTitle } from '~/components/ui/card'
@@ -64,17 +63,8 @@ export default function WorkoutScheduleCard({ session }: WorkoutScheduleCardProp
       </div>
 
       {!isRest && (
-        <span
-          className={cn(
-            'flex size-10 shrink-0 items-center justify-center rounded-full',
-            isToday ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-600'
-          )}
-        >
-          {isToday ? (
-            <Play weight="fill" className="size-4" />
-          ) : (
-            <CaretRight weight="bold" className="size-4" />
-          )}
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+          <CaretRight weight="bold" className="size-4" />
         </span>
       )}
     </CardContent>

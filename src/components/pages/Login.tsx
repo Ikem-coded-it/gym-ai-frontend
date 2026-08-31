@@ -47,7 +47,7 @@ export default function Login() {
       navigate({ to: ApplicationRoutes.ONBOARDING.SCHEDULE })
     },
     onError: (error: Error) => {
-      console.log("Login error:", error)
+      // console.log("Login error:", error)
       toast.error(error.message)
     },
   })

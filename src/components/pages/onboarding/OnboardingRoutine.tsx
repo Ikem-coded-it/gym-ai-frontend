@@ -1,6 +1,8 @@
 import { ArrowRight } from '@phosphor-icons/react'
+import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import AiRoutinePanel from '~/components/onboarding/AiRoutinePanel'
 import ManualRoutinePanel from '~/components/onboarding/ManualRoutinePanel'
 import OnboardingBackButton from '~/components/onboarding/OnboardingBackButton'
@@ -11,28 +13,31 @@ import ApplicationRoutes from '~/config/routes'
 import {
   getSortedTrainingDays,
   getTrainingDayLabel,
+  OnboardingPayload,
+  TrainingDay,
   type FocusArea,
   type IExercise,
   type RoutineMode,
 } from '~/lib/interfaces/onboarding'
-import useOnboardingStore from '~/store/zustand/onboarding.zustand'
+import useOnboardingStore, { type DayRoutine } from '~/store/zustand/onboarding.zustand'
+import onboardingService from '~/services/onboarding.service'
 
 const DEMO_EXERCISES: IExercise[] = [
   {
     id: '1',
-    name: 'Barbell Squat',
-    sets: 3,
-    reps: '5',
-    weightKg: 60,
-    equipment: 'Barbell',
+    exercise: 'Barbell Squat',
+    set_count: 3,
+    rep_count: 5,
+    kg_weight: 60,
+    equipment_name: 'Barbell',
   },
   {
     id: '2',
-    name: 'Romanian Deadlift',
-    sets: 3,
-    reps: '8',
-    weightKg: 50,
-    equipment: 'Barbell',
+    exercise: 'Romanian Deadlift',
+    set_count: 3,
+    rep_count: 8,
+    kg_weight: 50,
+    equipment_name: 'Barbell',
   },
 ]
 
@@ -148,6 +153,19 @@ export default function OnboardingRoutine({
     setExercises((current) => [...current, exercise])
   }
 
+  const handleDeleteExercise = (exerciseId: string) => {
+    setExercises((current) => current.filter((item) => item.id !== exerciseId))
+  }
+
+  const handlePreviousDay = () => {
+    if (currentDayIndex === 0) return
+
+    persistCurrentDay()
+    setCurrentDayIndex(currentDayIndex - 1)
+  }
+
+  const previousDay = currentDayIndex > 0 ? sortedDays[currentDayIndex - 1] : null
+
   const handleGenerateRoutine = () => {
     persistCurrentDay({ mode: 'ai', focusAreas })
 
@@ -157,13 +175,62 @@ export default function OnboardingRoutine({
     })
   }
 
+  function buildOnboardingPayload(
+    routines: Partial<Record<TrainingDay, DayRoutine>>,
+  ): OnboardingPayload {
+    return {
+      workouts: sortedDays.map((day) => {
+        const routine = routines[day]
+        if (!routine) {
+          throw new Error(`Missing routine for ${day}`)
+        }
+
+        return {
+          workout: {
+            muscle_group: routine.focusAreas.join(','),
+            day,
+          },
+          exercises: routine.exercises.map((exercise) => ({
+            exercise: exercise.exercise,
+            set_count: exercise.set_count,
+            rep_count: exercise.rep_count,
+            kg_weight: exercise.kg_weight,
+            equipment_name: exercise.equipment_name,
+          })),
+        }
+      }),
+    }
+  }
+
+  const onboardingMutation = useMutation({
+    mutationFn: (payload: OnboardingPayload) => onboardingService.createOnboarding(payload),
+    onSuccess: (_data, variables) => {
+      // console.log('Onboarding created: ', variables)
+      toast.success('Onboarding successful and workouts saved!')
+      navigate({ to: ApplicationRoutes.DASHBOARD.index })
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+
   const handleConfirmAndContinue = () => {
-    persistCurrentDay()
+    const currentRoutine: DayRoutine = {
+      mode,
+      exercises,
+      focusAreas,
+    }
+
+    setDayRoutine(currentDay, currentRoutine)
 
     const isLastDay = currentDayIndex === sortedDays.length - 1
 
     if (isLastDay) {
-      navigate({ to: ApplicationRoutes.DASHBOARD.index })
+      const routines = {
+        ...useOnboardingStore.getState().dayRoutines,
+        [currentDay]: currentRoutine,
+      }
+      onboardingMutation.mutate(buildOnboardingPayload(routines))
       return
     }
 
@@ -184,6 +251,10 @@ export default function OnboardingRoutine({
         dayLabel={getTrainingDayLabel(currentDay)}
         dayNumber={currentDayIndex + 1}
         totalDays={sortedDays.length}
+        previousDayLabel={
+          previousDay ? getTrainingDayLabel(previousDay) : undefined
+        }
+        onPreviousDay={previousDay ? handlePreviousDay : undefined}
       />
 
       <main className="flex-1 px-6 py-6">
@@ -210,6 +281,9 @@ export default function OnboardingRoutine({
             <ManualRoutinePanel
               exercises={exercises}
               onAddExercise={handleAddExercise}
+              onDeleteExercise={handleDeleteExercise}
+              selectedFocusAreas={focusAreas}
+              onToggleFocusArea={toggleFocusArea}
             />
           </TabsContent>
 

@@ -43,12 +43,22 @@ export const FOCUS_AREAS: { value: FocusArea; label: string }[] = [
 ]
 
 export interface IExercise {
-  id: string
-  name: string
-  sets: number
-  reps: string
-  weightKg: number
-  equipment: string
+  id: string | null
+  exercise: string
+  set_count: number
+  rep_count: number
+  kg_weight: number
+  equipment_name: string
+}
+
+export interface OnboardingPayload {
+  workouts: {
+    workout: {
+      muscle_group: FocusArea,
+      day: TrainingDay,
+    },
+    exercises: IExercise[],
+  }[]
 }
 
 export function getSortedTrainingDays(days: TrainingDay[]): TrainingDay[] {

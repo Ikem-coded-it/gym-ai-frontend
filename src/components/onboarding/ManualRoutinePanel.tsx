@@ -1,24 +1,34 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from '@phosphor-icons/react'
 import { useForm } from 'react-hook-form'
-import AuthFormField from '~/components/auth/AuthFormField'
 import ExerciseListItem from '~/components/onboarding/ExerciseListItem'
 import { Button } from '~/components/ui/button'
-import type { IExercise } from '~/lib/interfaces/onboarding'
+import { FOCUS_AREAS, FocusArea, type IExercise } from '~/lib/interfaces/onboarding'
 import {
   manualExerciseSchema,
   type ManualExerciseFormData,
 } from '~/lib/validators/onboarding'
+import FormField from '~/components/global/FormField'
+import SelectableChip from '../global/SelectableChip'
+import { useState } from 'react'
 
 type ManualRoutinePanelProps = {
   exercises: IExercise[]
   onAddExercise: (exercise: IExercise) => void
+  onDeleteExercise: (exerciseId: string) => void
+  selectedFocusAreas: FocusArea[]
+  onToggleFocusArea: (area: FocusArea) => void
 }
 
 export default function ManualRoutinePanel({
   exercises,
   onAddExercise,
+  onDeleteExercise,
+  selectedFocusAreas,
+  onToggleFocusArea,
 }: ManualRoutinePanelProps) {
+  const [error, setError] = useState<string | null>(null)
+  
   const {
     register,
     handleSubmit,
@@ -27,77 +37,93 @@ export default function ManualRoutinePanel({
   } = useForm<ManualExerciseFormData>({
     resolver: zodResolver(manualExerciseSchema),
     defaultValues: {
-      name: '',
-      sets: 3,
-      reps: '5-8',
-      weightKg: 0,
-      equipment: '',
+      exercise: '',
+      set_count: 3,
+      rep_count: 10,
+      kg_weight: 0,
+      equipment_name: '',
     },
   })
 
   const onSubmit = handleSubmit((data) => {
     onAddExercise({
       id: crypto.randomUUID(),
-      name: data.name,
-      sets: data.sets,
-      reps: data.reps,
-      weightKg: data.weightKg,
-      equipment: data.equipment,
+      exercise: data.exercise,
+      set_count: data.set_count,
+      rep_count: data.rep_count,
+      kg_weight: data.kg_weight,
+      equipment_name: data.equipment_name,
     })
     reset({
-      name: '',
-      sets: 3,
-      reps: '5-8',
-      weightKg: 0,
-      equipment: '',
+      exercise: '',
+      set_count: 3,
+      rep_count: 10,
+      kg_weight: 0,
+      equipment_name: '',
     })
   })
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap gap-3">
+        {FOCUS_AREAS.map((area) => (
+          <SelectableChip
+            key={area.value}
+            label={area.label}
+            value={area.value}
+            selected={selectedFocusAreas.includes(area.value)}
+            onSelect={(value) => {
+              onToggleFocusArea(value)
+              if (error) setError(null)
+            }}
+          />
+        ))}
+      </div>
+
       <div className="rounded-2xl bg-white p-5 shadow-sm">
         <form onSubmit={onSubmit} className="space-y-5">
-          <AuthFormField
+          <FormField
             id="name"
             label="Exercise name"
             placeholder="e.g., Barbell Squat"
-            error={errors.name}
-            registration={register('name')}
+            error={errors.exercise}
+            registration={register('exercise')}
           />
 
           <div className="grid grid-cols-2 gap-4">
-            <AuthFormField
+            <FormField
               id="sets"
               label="Sets"
               type="number"
               placeholder="3"
-              error={errors.sets}
-              registration={register('sets', { valueAsNumber: true })}
+              error={errors.set_count}
+              registration={register('set_count', { valueAsNumber: true })}
             />
-            <AuthFormField
+            <FormField
               id="reps"
               label="Reps"
-              placeholder="5-8"
-              error={errors.reps}
-              registration={register('reps')}
+              type="number"
+              placeholder="8"
+              error={errors.rep_count}
+              registration={register('rep_count')}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <AuthFormField
+            <FormField
               id="weightKg"
               label="Weight (kg)"
               type="number"
               placeholder="60"
-              error={errors.weightKg}
-              registration={register('weightKg', { valueAsNumber: true })}
+              error={errors.kg_weight}
+              registration={register('kg_weight', { valueAsNumber: true })}
             />
-            <AuthFormField
+            <FormField
               id="equipment"
               label="Equipment"
               placeholder="Barbell"
-              error={errors.equipment}
-              registration={register('equipment')}
+              error={errors.equipment_name}
+              registration={register('equipment_name')}
             />
           </div>
 
@@ -117,7 +143,11 @@ export default function ManualRoutinePanel({
           <h3 className="font-heading text-lg text-black">Current Routine</h3>
           <div className="space-y-3">
             {exercises.map((exercise) => (
-              <ExerciseListItem key={exercise.id} exercise={exercise} />
+              <ExerciseListItem
+                key={exercise.id}
+                exercise={exercise}
+                onDelete={() => onDeleteExercise(exercise.id)}
+              />
             ))}
           </div>
         </div>

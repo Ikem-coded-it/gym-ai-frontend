@@ -68,7 +68,7 @@ export const handleRequestInterceptor = (
     !newConfig.headers["authorization"]
   ) {
     const token = getAuthToken()?.token;
-    console.log('token', token);
+    // console.log('token', token);
     if (token) {
       newConfig.headers["Authorization"] = `Bearer ${token}`;
     }
