@@ -105,7 +105,7 @@ export default function ManualRoutinePanel({
               type="number"
               placeholder="8"
               error={errors.rep_count}
-              registration={register('rep_count')}
+              registration={register('rep_count', { valueAsNumber: true })}
             />
           </div>
 
