@@ -1,3 +1,5 @@
+'use client'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight } from '@phosphor-icons/react'
 import { useMutation } from '@tanstack/react-query'

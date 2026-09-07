@@ -1,4 +1,4 @@
-import { ISignupPayload, ISignupResponse, ILoginPayload, ILoginResponse, IForgotPasswordPayload, IUpdateProfilePayload, IVerifyEmailPayload } from '../lib/interfaces/auth';
+import { ISignupPayload, ISignupResponse, ILoginPayload, ILoginResponse, IMeResponse, IForgotPasswordPayload, IUpdateProfilePayload, IVerifyEmailPayload } from '../lib/interfaces/auth';
 import ApiService from './api.service';
 
 function usernameFromSignup(payload: ISignupPayload): string {
@@ -16,8 +16,10 @@ function usernameFromSignup(payload: ISignupPayload): string {
 }
 
 class AuthService {
-    async getMe() {
-        return ApiService.get('/auth/me');
+    async getMe(options?: { skipAuthRedirect?: boolean }) {
+        return ApiService.get<IMeResponse>('/auth/me', {
+            skipAuthRedirect: options?.skipAuthRedirect,
+        });
     }
 
     async updateProfile(payload: IUpdateProfilePayload) {

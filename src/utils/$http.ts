@@ -229,6 +229,91 @@ const $http = async <T = any>(
   }
 };
 
+/**
+ * Like $http, but returns the raw Response so the caller can stream the body.
+ * Does not apply a default timeout — chat streams can run longer than a typical request.
+ */
+const streamHttp = async (
+  endpoint: string,
+  config: FetchRequestConfig = {}
+): Promise<Response> => {
+  const finalConfig = handleRequestInterceptor({
+    ...config,
+    method: config.method || "GET",
+    url: endpoint,
+  });
+
+  const url = resolveRequestUrl(endpoint, finalConfig.baseURL || BASE_URL);
+  if (finalConfig.params) {
+    Object.entries(finalConfig.params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.append(key, String(value));
+      }
+    });
+  }
+
+  const controller = new AbortController();
+  const timeoutId = finalConfig.timeout
+    ? setTimeout(() => controller.abort(), finalConfig.timeout)
+    : null;
+
+  if (config.signal) {
+    if (config.signal.aborted) {
+      controller.abort();
+    } else {
+      config.signal.addEventListener("abort", () => controller.abort(), {
+        once: true,
+      });
+    }
+  }
+
+  finalConfig.signal = controller.signal;
+
+  try {
+    const response = await fetch(url.toString(), finalConfig as RequestInit);
+
+    if (timeoutId) clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      let responseData: unknown = null;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        try {
+          responseData = await response.json();
+        } catch {
+          responseData = null;
+        }
+      } else {
+        responseData = await response.text();
+      }
+
+      const result: FetchResponse = {
+        data: responseData,
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+        config: finalConfig,
+        ok: response.ok,
+      };
+
+      const error = new Error(
+        getApiErrorMessage(responseData, response.statusText)
+      ) as HttpError;
+      error.response = result;
+      error.config = finalConfig;
+      throw error;
+    }
+
+    return response;
+  } catch (error: any) {
+    if (timeoutId) clearTimeout(timeoutId);
+
+    const httpError = error as HttpError;
+    httpError.config = finalConfig;
+    return handleResponseError(httpError);
+  }
+};
+
 /* --- EXPORTS --- */
 
 // Helper to extract error messages (Legacy compatibility)
@@ -268,4 +353,10 @@ export default {
 
   // Raw request
   request: $http,
+
+  /**
+   * POST/GET a streaming response without buffering the body.
+   * Callers must read `response.body` themselves (e.g. SSE).
+   */
+  stream: streamHttp,
 };

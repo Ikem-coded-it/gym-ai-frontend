@@ -3,8 +3,21 @@ export interface IUser {
     email: string;
     firstName: string;
     lastName: string;
+    hasOnboarded: boolean;
     createdAt: string;
     updatedAt: string;
+}
+
+/** Response from GET /auth/me */
+export interface IMeResponse {
+    id: string;
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    has_onboarded: boolean;
+    created_at: string;
+    updated_at: string;
 }
 
   /** Form / service payload for POST /auth/signup */

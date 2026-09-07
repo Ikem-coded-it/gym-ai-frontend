@@ -1,3 +1,5 @@
+'use client'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
@@ -15,6 +17,7 @@ import {
 } from '~/lib/validators/auth'
 import authService from '~/services/auth.service'
 import useAuthStore from '~/store/zustand/auth.zustand'
+import { mapMeToUser } from '~/lib/utils/auth'
 import { saveAccessToken } from '~/utils/auth-token'
 
 export default function Login() {
@@ -23,6 +26,8 @@ export default function Login() {
   const updateEmail = useAuthStore((state) => state.updateEmail)
   const updateIsLoggedIn = useAuthStore((state) => state.updateIsLoggedIn)
   const updateAuthToken = useAuthStore((state) => state.updateAuthToken)
+
+  const updateCurrentUser = useAuthStore((state) => state.updateCurrentUser)
 
   const {
     register,
@@ -37,14 +42,23 @@ export default function Login() {
   })
 
   const loginMutation = useMutation({
-    mutationFn: (payload: ILoginPayload) => authService.login(payload),
-    onSuccess: (data, variables) => {
-      saveAccessToken(data.access_token)
-      updateAuthToken(data.access_token)
-      updateEmail(variables.email)
+    mutationFn: async (payload: ILoginPayload) => {
+      const loginData = await authService.login(payload)
+      saveAccessToken(loginData.access_token)
+      const user = await authService.getMe()
+      return { loginData, user, email: payload.email }
+    },
+    onSuccess: ({ loginData, user, email }) => {
+      updateAuthToken(loginData.access_token)
+      updateEmail(email)
+      updateCurrentUser(mapMeToUser(user))
       updateIsLoggedIn(true)
       toast.success('Welcome back!')
-      navigate({ to: ApplicationRoutes.ONBOARDING.SCHEDULE })
+      navigate({
+        to: user.has_onboarded
+          ? ApplicationRoutes.DASHBOARD.index
+          : ApplicationRoutes.ONBOARDING.SCHEDULE,
+      })
     },
     onError: (error: Error) => {
       // console.log("Login error:", error)
@@ -61,6 +75,7 @@ export default function Login() {
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    event.stopPropagation()
     void submitLogin(event)
   }
 
@@ -80,7 +95,13 @@ export default function Login() {
 
         <AuthDivider>or</AuthDivider>
 
-        <form onSubmit={onSubmit} noValidate className="space-y-6">
+        <form
+          onSubmit={onSubmit}
+          noValidate
+          method="post"
+          action="#"
+          className="space-y-6"
+        >
           <AuthFormField
             id="email"
             label="Email"

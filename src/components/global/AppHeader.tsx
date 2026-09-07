@@ -1,6 +1,9 @@
-import { List, UserCircle } from '@phosphor-icons/react'
+'use client'
+
+import { List } from '@phosphor-icons/react'
 import { Link } from '@tanstack/react-router'
 import ApplicationRoutes from '~/config/routes'
+import ProfileMenu from '~/components/global/ProfileMenu'
 
 export default function AppHeader() {
   return (
@@ -20,13 +23,7 @@ export default function AppHeader() {
         GymAI
       </Link>
 
-      <button
-        type="button"
-        className="text-gray-400"
-        aria-label="Open profile"
-      >
-        <UserCircle className="size-8" weight="duotone" />
-      </button>
+      <ProfileMenu />
     </header>
   )
 }

@@ -1,13 +1,15 @@
-import { Play, Plus } from '@phosphor-icons/react'
+import { Plus } from '@phosphor-icons/react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import AddExerciseDialog from '~/components/dashboard/AddExerciseDialog'
 import WorkoutDetailsHeader from '~/components/dashboard/WorkoutDetailsHeader'
 import WorkoutExerciseCard from '~/components/dashboard/WorkoutExerciseCard'
 import { Button } from '~/components/ui/button'
 import { Spinner } from '~/components/ui/spinner'
 import ApplicationRoutes from '~/config/routes'
 import { workoutQueryKeys } from '~/lib/constants/workout'
+import type { IWorkoutExercise } from '~/lib/interfaces/workout'
 import { findWorkoutDetail } from '~/lib/utils/workout'
 import workoutService from '~/services/workout.service'
 
@@ -17,6 +19,8 @@ type WorkoutDetailsProps = {
 
 export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
   const navigate = useNavigate()
+  const [isAddExerciseOpen, setIsAddExerciseOpen] = useState(false)
+  const [exercises, setExercises] = useState<IWorkoutExercise[]>([])
 
   const {
     data: workouts,
@@ -32,6 +36,12 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
     if (!workouts) return undefined
     return findWorkoutDetail(workouts, workoutId)
   }, [workouts, workoutId])
+
+  useEffect(() => {
+    if (workout) {
+      setExercises(workout.exercises)
+    }
+  }, [workout])
 
   useEffect(() => {
     if (!isLoading && !isError && workouts && !workout) {
@@ -61,6 +71,10 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
     return null
   }
 
+  const handleAddExercise = (exercise: IWorkoutExercise) => {
+    setExercises((current) => [...current, exercise])
+  }
+
   return (
     <div className="flex min-h-dvh flex-col bg-[#F5F5F5]">
       <WorkoutDetailsHeader />
@@ -75,11 +89,11 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
         <p className="mt-2 text-sm text-gray-500">{workout.focus}</p>
 
         <div className="mt-6 space-y-3">
-          {workout.exercises.map((exercise) => (
+          {exercises.map((exercise) => (
             <WorkoutExerciseCard key={exercise.id} exercise={exercise} />
           ))}
 
-          {workout.exercises.length === 0 && (
+          {exercises.length === 0 && (
             <p className="text-sm text-gray-500">
               No exercises added to this workout yet.
             </p>
@@ -88,6 +102,7 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
           <Button
             type="button"
             variant="outline"
+            onClick={() => setIsAddExerciseOpen(true)}
             className="h-auto w-full rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/50 py-4 text-sm font-medium text-blue-600 hover:bg-blue-100/50"
           >
             <Plus weight="bold" className="size-4" />
@@ -96,15 +111,11 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
         </div>
       </main>
 
-      <footer className="border-t border-gray-200 bg-[#F5F5F5] px-6 py-6">
-        <Button
-          type="button"
-          className="h-12 w-full rounded-xl bg-blue-600 text-base font-semibold text-white hover:bg-blue-700"
-        >
-          <Play weight="fill" className="size-4" />
-          Start Workout
-        </Button>
-      </footer>
+      <AddExerciseDialog
+        open={isAddExerciseOpen}
+        onOpenChange={setIsAddExerciseOpen}
+        onAddExercise={handleAddExercise}
+      />
     </div>
   )
 }

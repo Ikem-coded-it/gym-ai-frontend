@@ -3,9 +3,9 @@ import $http from '../utils/$http';
 import { FetchRequestConfig } from '../lib/interfaces/http';
 
 export default class ApiService {
-  static async get<T>(url: string, headers?: Record<string, string>): Promise<T> {
+  static async get<T>(url: string, config?: FetchRequestConfig): Promise<T> {
     try {
-      const response = await $http.get<T>(url, { headers });
+      const response = await $http.get<T>(url, config);
       
       if (response.status !== 200) {
         throw new Error(`Failed to fetch data from ${url}`);
@@ -124,6 +124,29 @@ export default class ApiService {
         throw new Error(`Failed to ${method} data to ${url}`);
       }
       return response.data;
+    } catch (error) {
+      throw getHttpErrorMessage(error);
+    }
+  }
+
+  /**
+   * POST JSON and return the raw Response for SSE / streaming consumers.
+   */
+  static async postStream(
+    url: string,
+    data: object,
+    config?: FetchRequestConfig,
+  ): Promise<Response> {
+    try {
+      return await $http.stream(url, {
+        ...config,
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          Accept: 'text/event-stream',
+          ...config?.headers,
+        },
+      });
     } catch (error) {
       throw getHttpErrorMessage(error);
     }

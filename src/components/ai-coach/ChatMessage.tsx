@@ -1,5 +1,8 @@
 import { Robot, User } from '@phosphor-icons/react'
+import ChatMarkdown from '~/components/ai-coach/ChatMarkdown'
 import type { IChatMessage } from '~/lib/interfaces/chat'
+import useAuthStore from '~/store/zustand/auth.zustand'
+import { Spinner } from '~/components/ui/spinner'
 import { cn } from '~/lib/utils'
 
 type ChatMessageProps = {
@@ -24,6 +27,7 @@ function UserAvatar() {
 
 export default function ChatMessage({ message }: ChatMessageProps) {
   const isAi = message.role === 'ai'
+  const firstName = useAuthStore((state) => state.currentUser?.firstName)
 
   return (
     <div
@@ -41,8 +45,14 @@ export default function ChatMessage({ message }: ChatMessageProps) {
         )}
       >
         <span className="px-1 text-xs text-gray-400">
-          {isAi ? 'GymAI' : 'User'}
+          {isAi ? 'GymAI' : firstName || 'User'}
         </span>
+
+        {message.isStreaming && !message.content && (
+          <div className="rounded-2xl rounded-tl-sm bg-gray-200 px-4 py-3">
+            <Spinner className="size-4 text-gray-500" />
+          </div>
+        )}
 
         {message.content && (
           <div
@@ -50,10 +60,14 @@ export default function ChatMessage({ message }: ChatMessageProps) {
               'rounded-2xl px-4 py-3 text-sm leading-relaxed',
               isAi
                 ? 'rounded-tl-sm bg-gray-200 text-gray-800'
-                : 'rounded-tr-sm bg-blue-600 text-white'
+                : 'rounded-tr-sm bg-blue-600 text-white whitespace-pre-wrap'
             )}
           >
-            {message.content}
+            {isAi ? (
+              <ChatMarkdown content={message.content} />
+            ) : (
+              message.content
+            )}
           </div>
         )}
 

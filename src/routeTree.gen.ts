@@ -21,6 +21,7 @@ import { Route as PathlessLayoutNestedLayoutRouteImport } from './routes/_pathle
 import { Route as ApiUsersRouteImport } from './routes/api/users'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
@@ -98,6 +99,11 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLogoutRoute = AuthLogoutRouteImport.update({
+  id: '/auth/logout',
+  path: '/auth/logout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -211,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/api/users': typeof ApiUsersRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/logout': typeof AuthLogoutRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/dashboard/ai-coach': typeof DashboardAiCoachRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/api/users': typeof ApiUsersRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/logout': typeof AuthLogoutRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/dashboard/ai-coach': typeof DashboardAiCoachRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/api/users': typeof ApiUsersRouteWithChildren
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/logout': typeof AuthLogoutRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/dashboard/ai-coach': typeof DashboardAiCoachRoute
@@ -305,6 +314,7 @@ export interface FileRouteTypes {
     | '/api/users'
     | '/auth/forgot-password'
     | '/auth/login'
+    | '/auth/logout'
     | '/auth/register'
     | '/auth/verify-email'
     | '/dashboard/ai-coach'
@@ -333,6 +343,7 @@ export interface FileRouteTypes {
     | '/api/users'
     | '/auth/forgot-password'
     | '/auth/login'
+    | '/auth/logout'
     | '/auth/register'
     | '/auth/verify-email'
     | '/dashboard/ai-coach'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/api/users'
     | '/auth/forgot-password'
     | '/auth/login'
+    | '/auth/logout'
     | '/auth/register'
     | '/auth/verify-email'
     | '/dashboard/ai-coach'
@@ -398,6 +410,7 @@ export interface RootRouteChildren {
   ApiUsersRoute: typeof ApiUsersRouteWithChildren
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
+  AuthLogoutRoute: typeof AuthLogoutRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   OnboardingRoutineRoute: typeof OnboardingRoutineRouteWithChildren
@@ -489,6 +502,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/login'
       fullPath: '/auth/login'
       preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/logout': {
+      id: '/auth/logout'
+      path: '/auth/logout'
+      fullPath: '/auth/logout'
+      preLoaderRoute: typeof AuthLogoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/register': {
@@ -738,6 +758,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiUsersRoute: ApiUsersRouteWithChildren,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
+  AuthLogoutRoute: AuthLogoutRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   OnboardingRoutineRoute: OnboardingRoutineRouteWithChildren,

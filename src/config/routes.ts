@@ -6,6 +6,7 @@ const ApplicationRoutes = {
         VERIFY_EMAIL: '/auth/verify-email',
         FORGOT_PASSWORD: '/auth/forgot-password',
         RESET_PASSWORD: '/auth/reset-password',
+        LOGOUT: '/auth/logout',
     },
     ONBOARDING: {
         SCHEDULE: '/onboarding/schedule',
