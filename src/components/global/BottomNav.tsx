@@ -1,6 +1,5 @@
 import {
   Barbell,
-  ClockCounterClockwise,
   Robot,
   User,
 } from '@phosphor-icons/react'
@@ -20,12 +19,6 @@ const navItems = [
     to: ApplicationRoutes.DASHBOARD.AI_COACH,
     icon: Robot,
     matchPaths: [ApplicationRoutes.DASHBOARD.AI_COACH],
-  },
-  {
-    label: 'History',
-    to: ApplicationRoutes.DASHBOARD.HISTORY,
-    icon: ClockCounterClockwise,
-    matchPaths: [ApplicationRoutes.DASHBOARD.HISTORY],
   },
   {
     label: 'Profile',

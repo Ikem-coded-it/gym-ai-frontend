@@ -67,14 +67,13 @@ export default class ApiService {
     }
   }
 
-  static async delete<T>(url: string): Promise<T> {
+  static async delete(url: string): Promise<void> {
     try {
-      const response = await $http.delete<T>(url);
-      
-      if (response.status !== 200) {
+      const response = await $http.delete(url);
+
+      if (response.status !== 200 && response.status !== 204) {
         throw new Error(`Failed to delete data from ${url}`);
       }
-      return response.data;
     } catch (error) {
       throw getHttpErrorMessage(error);
     }

@@ -77,7 +77,10 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#F5F5F5]">
-      <WorkoutDetailsHeader />
+      <WorkoutDetailsHeader
+        workoutId={workoutId}
+        workoutLabel={workout.dayName}
+      />
 
       <main className="flex-1 px-6 py-6">
         <div className="flex items-start justify-between gap-3">

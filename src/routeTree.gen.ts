@@ -26,7 +26,6 @@ import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardAiCoachRouteImport } from './routes/dashboard/ai-coach'
-import { Route as DashboardHistoryRouteImport } from './routes/dashboard/history'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard/profile'
 import { Route as OnboardingRoutineRouteImport } from './routes/onboarding/routine'
 import { Route as OnboardingScheduleRouteImport } from './routes/onboarding/schedule'
@@ -126,11 +125,6 @@ const DashboardAiCoachRoute = DashboardAiCoachRouteImport.update({
   path: '/ai-coach',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardHistoryRoute = DashboardHistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
-  getParentRoute: () => DashboardRoute,
-} as any)
 const DashboardProfileRoute = DashboardProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -221,7 +215,6 @@ export interface FileRoutesByFullPath {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/dashboard/ai-coach': typeof DashboardAiCoachRoute
-  '/dashboard/history': typeof DashboardHistoryRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/onboarding/routine': typeof OnboardingRoutineRouteWithChildren
   '/onboarding/schedule': typeof OnboardingScheduleRoute
@@ -250,7 +243,6 @@ export interface FileRoutesByTo {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/dashboard/ai-coach': typeof DashboardAiCoachRoute
-  '/dashboard/history': typeof DashboardHistoryRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/onboarding/schedule': typeof OnboardingScheduleRoute
   '/posts/$postId': typeof PostsPostIdRoute
@@ -284,7 +276,6 @@ export interface FileRoutesById {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/dashboard/ai-coach': typeof DashboardAiCoachRoute
-  '/dashboard/history': typeof DashboardHistoryRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/onboarding/routine': typeof OnboardingRoutineRouteWithChildren
   '/onboarding/schedule': typeof OnboardingScheduleRoute
@@ -318,7 +309,6 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/verify-email'
     | '/dashboard/ai-coach'
-    | '/dashboard/history'
     | '/dashboard/profile'
     | '/onboarding/routine'
     | '/onboarding/schedule'
@@ -347,7 +337,6 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/verify-email'
     | '/dashboard/ai-coach'
-    | '/dashboard/history'
     | '/dashboard/profile'
     | '/onboarding/schedule'
     | '/posts/$postId'
@@ -380,7 +369,6 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/verify-email'
     | '/dashboard/ai-coach'
-    | '/dashboard/history'
     | '/dashboard/profile'
     | '/onboarding/routine'
     | '/onboarding/schedule'
@@ -539,13 +527,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAiCoachRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/history': {
-      id: '/dashboard/history'
-      path: '/history'
-      fullPath: '/dashboard/history'
-      preLoaderRoute: typeof DashboardHistoryRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     '/dashboard/profile': {
       id: '/dashboard/profile'
       path: '/profile'
@@ -679,7 +660,6 @@ const PathlessLayoutRouteWithChildren = PathlessLayoutRoute._addFileChildren(
 
 interface DashboardRouteChildren {
   DashboardAiCoachRoute: typeof DashboardAiCoachRoute
-  DashboardHistoryRoute: typeof DashboardHistoryRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardWorkoutWorkoutIdRoute: typeof DashboardWorkoutWorkoutIdRoute
@@ -687,7 +667,6 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAiCoachRoute: DashboardAiCoachRoute,
-  DashboardHistoryRoute: DashboardHistoryRoute,
   DashboardProfileRoute: DashboardProfileRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardWorkoutWorkoutIdRoute: DashboardWorkoutWorkoutIdRoute,

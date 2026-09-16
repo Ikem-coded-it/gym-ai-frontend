@@ -5,6 +5,10 @@ class WorkoutService {
   async getWorkouts() {
     return ApiService.get<IWorkoutResponse[]>('/workout/')
   }
+
+  async deleteWorkout(workoutId: string) {
+    return ApiService.delete(`/workout/${workoutId}`)
+  }
 }
 
 const workoutService = new WorkoutService()
