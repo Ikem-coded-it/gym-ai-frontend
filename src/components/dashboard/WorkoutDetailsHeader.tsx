@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useRouter } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import DeleteWorkoutConfirmDialog from '~/components/dashboard/DeleteWorkoutConfirmDialog'
 import ApplicationRoutes from '~/config/routes'
 import { workoutQueryKeys } from '~/lib/constants/workout'
 import { cn } from '~/lib/utils'
@@ -23,6 +24,7 @@ export default function WorkoutDetailsHeader({
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export default function WorkoutDetailsHeader({
   const deleteMutation = useMutation({
     mutationFn: () => workoutService.deleteWorkout(workoutId),
     onSuccess: async () => {
+      setDeleteDialogOpen(false)
       await queryClient.invalidateQueries({ queryKey: workoutQueryKeys.all })
       toast.success('Workout deleted')
       navigate({ to: ApplicationRoutes.DASHBOARD.index })
@@ -50,17 +53,18 @@ export default function WorkoutDetailsHeader({
     },
   })
 
-  const handleDeleteWorkout = () => {
+  const handleOpenDeleteDialog = () => {
     setMenuOpen(false)
+    setDeleteDialogOpen(true)
+  }
 
-    const label = workoutLabel ? ` "${workoutLabel}"` : ''
-    const confirmed = window.confirm(
-      `Delete this workout${label}? This cannot be undone.`,
-    )
-    if (!confirmed) return
-
+  const handleConfirmDelete = () => {
     deleteMutation.mutate()
   }
+
+  const deleteDescription = workoutLabel
+    ? `Delete "${workoutLabel}"? This cannot be undone.`
+    : 'Delete this workout? This cannot be undone.'
 
   return (
     <header className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
@@ -104,14 +108,22 @@ export default function WorkoutDetailsHeader({
               role="menuitem"
               disabled={deleteMutation.isPending}
               className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
-              onClick={handleDeleteWorkout}
+              onClick={handleOpenDeleteDialog}
             >
               <Trash className="size-4" />
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete workout'}
+              Delete workout
             </button>
           </div>
         )}
       </div>
+
+      <DeleteWorkoutConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        description={deleteDescription}
+        isPending={deleteMutation.isPending}
+        onConfirm={handleConfirmDelete}
+      />
     </header>
   )
 }
