@@ -1,12 +1,17 @@
-import ApiService from './api.service'
+import type { IApiChatComposer } from '~/lib/interfaces/chat-composer'
 import type { IChatHistoryResponse } from '~/lib/interfaces/chat'
+import { mapApiComposer } from '~/lib/utils/chat-composer'
+import ApiService from './api.service'
+import type { ChatStreamEvent } from '~/lib/interfaces/chat'
 
-type ChatStreamEvent = {
-  type: 'start' | 'token' | 'done' | 'error'
-  content?: string
-  message?: string
-  conversation_id?: string
-  message_id?: string
+export type ChatStreamHandlers = {
+  onToken: (token: string) => void
+  onComposer?: (payload: {
+    messageId: string
+    composer: ReturnType<typeof mapApiComposer>
+  }) => void
+  onComposerClear?: (payload: { messageId: string }) => void
+  onDone?: (payload: { messageId: string }) => void
 }
 
 function parseSseEvents(buffer: string): {
@@ -39,7 +44,7 @@ class ChatService {
 
   async streamMessage(
     message: string,
-    onToken: (token: string) => void,
+    handlers: ChatStreamHandlers,
     signal?: AbortSignal
   ): Promise<void> {
     const response = await ApiService.postStream(
@@ -67,10 +72,20 @@ class ChatService {
 
         for (const event of parsed.events) {
           if (event.type === 'token' && event.content) {
-            onToken(event.content)
+            handlers.onToken(event.content)
+          } else if (event.type === 'composer') {
+            handlers.onComposer?.({
+              messageId: event.message_id,
+              composer: mapApiComposer(event.composer),
+            })
+          } else if (event.type === 'composer_clear') {
+            handlers.onComposerClear?.({ messageId: event.message_id })
           } else if (event.type === 'error') {
             throw new Error(event.message || 'Chat stream failed')
           } else if (event.type === 'done') {
+            if (event.message_id) {
+              handlers.onDone?.({ messageId: event.message_id })
+            }
             return
           }
         }

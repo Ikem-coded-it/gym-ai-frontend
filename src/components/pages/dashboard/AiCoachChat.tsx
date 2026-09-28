@@ -1,3 +1,5 @@
+'use client'
+
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -6,9 +8,29 @@ import ChatInputBar from '~/components/ai-coach/ChatInputBar'
 import ChatMessage from '~/components/ai-coach/ChatMessage'
 import { Spinner } from '~/components/ui/spinner'
 import { chatQueryKeys } from '~/lib/constants/chat'
+import { workoutQueryKeys } from '~/lib/constants/workout'
 import type { IChatMessage } from '~/lib/interfaces/chat'
-import { mapApiMessagesToChatMessages } from '~/lib/utils/chat'
+import {
+  mapChatHistoryToMessages,
+  shouldShowMessageComposer,
+} from '~/lib/utils/chat-composer'
 import chatService from '~/services/chat.service'
+
+function patchAssistantMessage(
+  messages: IChatMessage[],
+  assistantLocalId: string,
+  assistantActiveId: string,
+  patch: Partial<IChatMessage>
+): IChatMessage[] {
+  return messages.map((message) => {
+    const isTarget =
+      message.id === assistantActiveId || message.id === assistantLocalId
+    if (!isTarget || message.role !== 'ai') {
+      return message
+    }
+    return { ...message, ...patch }
+  })
+}
 
 export default function AiCoachChat() {
   const queryClient = useQueryClient()
@@ -16,6 +38,8 @@ export default function AiCoachChat() {
   const [isStreaming, setIsStreaming] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const assistantLocalIdRef = useRef<string>('')
+  const assistantActiveIdRef = useRef<string>('')
 
   const {
     data: history,
@@ -28,10 +52,10 @@ export default function AiCoachChat() {
   })
 
   useEffect(() => {
-    if (history) {
-      setMessages(mapApiMessagesToChatMessages(history.messages))
+    if (history && !isStreaming) {
+      setMessages(mapChatHistoryToMessages(history))
     }
-  }, [history])
+  }, [history, isStreaming])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
@@ -46,17 +70,21 @@ export default function AiCoachChat() {
   }, [])
 
   const handleSend = async (content: string) => {
-    const assistantId = crypto.randomUUID()
+    const assistantLocalId = crypto.randomUUID()
+    assistantLocalIdRef.current = assistantLocalId
+    assistantActiveIdRef.current = assistantLocalId
 
     setMessages((current) => [
-      ...current,
+      ...current.map((message) =>
+        message.composer ? { ...message, composer: undefined } : message
+      ),
       {
         id: crypto.randomUUID(),
         role: 'user',
         content,
       },
       {
-        id: assistantId,
+        id: assistantLocalId,
         role: 'ai',
         content: '',
         isStreaming: true,
@@ -71,18 +99,60 @@ export default function AiCoachChat() {
     try {
       await chatService.streamMessage(
         content,
-        (token) => {
-          setMessages((current) =>
-            current.map((message) =>
-              message.id === assistantId
-                ? { ...message, content: message.content + token }
-                : message
+        {
+          onToken: (token) => {
+            setMessages((current) =>
+              current.map((message) => {
+                const isStreamingAssistant =
+                  message.role === 'ai' &&
+                  (message.id === assistantActiveIdRef.current ||
+                    message.id === assistantLocalIdRef.current)
+                if (!isStreamingAssistant) {
+                  return message
+                }
+                return { ...message, content: message.content + token }
+              })
             )
-          )
+          },
+          onComposer: ({ messageId, composer }) => {
+            assistantActiveIdRef.current = messageId
+            setMessages((current) =>
+              patchAssistantMessage(
+                current,
+                assistantLocalIdRef.current,
+                assistantActiveIdRef.current,
+                { id: messageId, composer }
+              )
+            )
+          },
+          onComposerClear: ({ messageId }) => {
+            assistantActiveIdRef.current = messageId
+            setMessages((current) =>
+              patchAssistantMessage(
+                current,
+                assistantLocalIdRef.current,
+                assistantActiveIdRef.current,
+                { id: messageId, composer: undefined }
+              )
+            )
+          },
+          onDone: ({ messageId }) => {
+            assistantActiveIdRef.current = messageId
+            setMessages((current) =>
+              patchAssistantMessage(
+                current,
+                assistantLocalIdRef.current,
+                assistantActiveIdRef.current,
+                { id: messageId }
+              )
+            )
+          },
         },
         controller.signal
       )
+
       await queryClient.invalidateQueries({ queryKey: chatQueryKeys.history })
+      await queryClient.invalidateQueries({ queryKey: workoutQueryKeys.all })
     } catch (error) {
       if (controller.signal.aborted) return
 
@@ -90,23 +160,28 @@ export default function AiCoachChat() {
         error instanceof Error ? error.message : 'Failed to get a response'
       )
       setMessages((current) =>
-        current.map((message) =>
-          message.id === assistantId
-            ? {
-                ...message,
-                content:
-                  message.content ||
-                  'Sorry, I could not answer that. Please try again.',
-              }
-            : message
+        patchAssistantMessage(
+          current,
+          assistantLocalIdRef.current,
+          assistantActiveIdRef.current,
+          {
+            content:
+              current.find(
+                (message) =>
+                  message.id === assistantActiveIdRef.current ||
+                  message.id === assistantLocalIdRef.current
+              )?.content ||
+              'Sorry, I could not answer that. Please try again.',
+          }
         )
       )
     } finally {
       setMessages((current) =>
-        current.map((message) =>
-          message.id === assistantId
-            ? { ...message, isStreaming: false }
-            : message
+        patchAssistantMessage(
+          current,
+          assistantLocalIdRef.current,
+          assistantActiveIdRef.current,
+          { isStreaming: false }
         )
       )
       setIsStreaming(false)
@@ -138,7 +213,17 @@ export default function AiCoachChat() {
 
         {!isLoading &&
           messages.map((message) => (
-            <ChatMessage key={message.id} message={message} />
+            <ChatMessage
+              key={message.id}
+              message={message}
+              showComposer={shouldShowMessageComposer(
+                message,
+                messages,
+                isStreaming
+              )}
+              onComposerSelect={handleSend}
+              composerDisabled={isStreaming || isLoading}
+            />
           ))}
         <div ref={bottomRef} />
       </div>
