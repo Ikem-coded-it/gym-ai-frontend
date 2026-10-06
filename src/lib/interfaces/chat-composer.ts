@@ -4,6 +4,7 @@ export type ChatComposerKind =
   | 'day_select'
   | 'chips'
   | 'muscle_group_multi_select'
+  | 'exercise_form'
   | 'confirm'
 
 export interface IComposerOption {

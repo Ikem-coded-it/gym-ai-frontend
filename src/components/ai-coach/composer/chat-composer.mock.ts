@@ -19,8 +19,8 @@ export const MOCK_MUSCLE_CHIPS_COMPOSER: IChatComposer = {
   })),
 }
 
-export const MOCK_SUGGEST_COMPOSER: IChatComposer = {
-  kind: 'chips',
+export const MOCK_EXERCISE_FORM_COMPOSER: IChatComposer = {
+  kind: 'exercise_form',
   options: [{ label: 'Suggest a plan', value: 'suggest' }],
 }
 

@@ -6,7 +6,7 @@ import {
   MOCK_CONFIRM_COMPOSER,
   MOCK_MUSCLE_CHIPS_COMPOSER,
   MOCK_SCHEDULING_MESSAGES,
-  MOCK_SUGGEST_COMPOSER,
+  MOCK_EXERCISE_FORM_COMPOSER,
 } from '~/components/ai-coach/composer/chat-composer.mock'
 import type { IChatMessage } from '~/lib/interfaces/chat'
 import { shouldShowMessageComposer } from '~/lib/utils/chat-composer'
@@ -29,7 +29,7 @@ export default function ChatComposerPreview() {
       role: 'ai',
       content:
         'Send your exercises one per line, or reply **suggest** and I\'ll propose a plan.',
-      composer: MOCK_SUGGEST_COMPOSER,
+      composer: MOCK_EXERCISE_FORM_COMPOSER,
     },
     {
       id: 'mock-ai-review',
