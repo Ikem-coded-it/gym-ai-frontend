@@ -21,7 +21,9 @@ function composerHint(composer: IChatComposer): string | null {
     return 'Select muscle groups (one or more):'
   }
   if (composer.kind === 'exercise_form') {
-    return 'Add your exercises below (or use Suggest a plan):'
+    return composer.exercises?.length
+      ? 'Edit your exercises below, then resubmit:'
+      : 'Add your exercises below (or use Suggest a plan):'
   }
   if (composer.kind === 'day_select' || composer.kind === 'confirm') {
     return 'Or pick a quick reply:'
@@ -73,6 +75,7 @@ export default function ChatMessageComposer({
       {composer.kind === 'exercise_form' && (
         <ChatExerciseFormComposer
           suggestOption={composer.options[0]}
+          initialExercises={composer.exercises}
           onSelect={onSelect}
           disabled={disabled}
         />

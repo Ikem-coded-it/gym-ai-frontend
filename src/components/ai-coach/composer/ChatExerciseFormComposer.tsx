@@ -5,9 +5,13 @@ import { useState } from 'react'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import type { IComposerOption } from '~/lib/interfaces/chat-composer'
+import type {
+  IComposerExercise,
+  IComposerOption,
+} from '~/lib/interfaces/chat-composer'
 import {
   areAllExerciseRowsComplete,
+  composerExercisesToRows,
   createEmptyExerciseRow,
   formatExercisesMessage,
   parseKgWeightInput,
@@ -17,6 +21,7 @@ import { cn } from '~/lib/utils'
 
 type ChatExerciseFormComposerProps = {
   suggestOption?: IComposerOption
+  initialExercises?: IComposerExercise[] | null
   onSelect: (value: string) => void
   disabled?: boolean
   className?: string
@@ -24,11 +29,15 @@ type ChatExerciseFormComposerProps = {
 
 export default function ChatExerciseFormComposer({
   suggestOption,
+  initialExercises,
   onSelect,
   disabled = false,
   className,
 }: ChatExerciseFormComposerProps) {
-  const [rows, setRows] = useState<ExerciseDraftRow[]>([createEmptyExerciseRow()])
+  const isPrefill = Boolean(initialExercises?.length)
+  const [rows, setRows] = useState<ExerciseDraftRow[]>(() =>
+    composerExercisesToRows(initialExercises)
+  )
 
   const updateRow = (
     index: number,
@@ -204,7 +213,7 @@ export default function ChatExerciseFormComposer({
           disabled={disabled || !canSend}
           onClick={handleSend}
         >
-          Send exercises
+          {isPrefill ? 'Update exercises' : 'Send exercises'}
         </Button>
       </div>
     </div>

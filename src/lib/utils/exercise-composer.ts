@@ -1,3 +1,5 @@
+import type { IComposerExercise } from '~/lib/interfaces/chat-composer'
+
 export type ExerciseDraftRow = {
   exercise: string
   set_count: number
@@ -55,6 +57,24 @@ export function isExerciseRowComplete(row: ExerciseDraftRow): boolean {
 
 export function areAllExerciseRowsComplete(rows: ExerciseDraftRow[]): boolean {
   return rows.length > 0 && rows.every(isExerciseRowComplete)
+}
+
+export function composerExercisesToRows(
+  exercises: IComposerExercise[] | null | undefined
+): ExerciseDraftRow[] {
+  if (!exercises?.length) {
+    return [createEmptyExerciseRow()]
+  }
+  return exercises.map((exercise) => ({
+    exercise: exercise.exercise,
+    set_count: exercise.set_count,
+    rep_count: exercise.rep_count,
+    kg_weight:
+      exercise.kg_weight == null || exercise.kg_weight === 0
+        ? null
+        : exercise.kg_weight,
+    equipment_name: exercise.equipment_name ?? '',
+  }))
 }
 
 export function parseKgWeightInput(raw: string): number | null {

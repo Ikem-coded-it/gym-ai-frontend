@@ -10,6 +10,7 @@ export function mapApiComposer(payload: IApiChatComposer): IChatComposer {
     kind: payload.kind,
     options: payload.options,
     suggestedValue: payload.suggested_value ?? null,
+    exercises: payload.exercises ?? null,
   }
 }
 
