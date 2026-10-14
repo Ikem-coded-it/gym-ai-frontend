@@ -20,8 +20,8 @@ type ChatMessageProps = {
 
 function AiAvatar() {
   return (
-    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted">
-      <Robot className="size-4 text-muted-foreground" weight="fill" />
+    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-card">
+      <Robot className="size-4" weight="fill" />
     </div>
   )
 }
@@ -52,10 +52,10 @@ function ChatBubble({
     >
       <div
         className={cn(
-          'px-3 py-2.5 text-sm leading-relaxed',
+          'px-4 py-2.5 text-[15px] leading-relaxed',
           isAi
-            ? 'rounded-2xl border border-gray-200 bg-white text-gray-900 shadow-sm'
-            : 'rounded-2xl bg-blue-600 text-white whitespace-pre-wrap',
+            ? 'rounded-2xl rounded-tl-md border border-gray-200 bg-white text-gray-900 shadow-card'
+            : 'rounded-2xl rounded-tr-md bg-blue-600 text-white shadow-card whitespace-pre-wrap',
         )}
       >
         {children}
@@ -90,13 +90,13 @@ export default function ChatMessage({
 
       <div
         className={cn(
-          'flex min-w-0 flex-1 flex-col gap-2',
+          'flex min-w-0 flex-1 flex-col gap-1.5',
           !isAi && 'items-end',
         )}
       >
         <span
           className={cn(
-            'px-0.5 text-xs text-muted-foreground',
+            'px-1 text-xs font-medium text-muted-foreground',
             !isAi && 'w-full text-right',
           )}
         >
@@ -122,7 +122,7 @@ export default function ChatMessage({
         {message.imageUrl && (
           <div
             className={cn(
-              'max-w-[85%] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm',
+              'max-w-[85%] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-card',
               align === 'end' ? 'self-end' : 'self-start',
             )}
           >

@@ -1,4 +1,4 @@
-import { PencilSimple, Trash } from '@phosphor-icons/react'
+import { Barbell, PencilSimple, Trash } from '@phosphor-icons/react'
 import type { IExercise } from '~/lib/interfaces/onboarding'
 
 type ExerciseListItemProps = {
@@ -13,20 +13,23 @@ export default function ExerciseListItem({
   onDelete,
 }: ExerciseListItemProps) {
   return (
-    <div className="flex items-center justify-between rounded-xl bg-white px-4 py-4 shadow-sm">
-      <div>
-        <p className="font-medium text-gray-900">{exercise.exercise}</p>
-        <p className="mt-1 text-sm text-gray-500">
+    <div className="flex items-center gap-3 rounded-2xl bg-card p-3 pr-2 shadow-card ring-1 ring-foreground/5">
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+        <Barbell weight="fill" className="size-5" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-semibold text-foreground">{exercise.exercise}</p>
+        <p className="mt-0.5 text-sm text-muted-foreground">
           {exercise.set_count} sets x {exercise.rep_count} reps • {exercise.kg_weight}kg
         </p>
       </div>
       {(onEdit || onDelete) && (
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center">
           {onEdit && (
             <button
               type="button"
               onClick={() => onEdit(exercise)}
-              className="text-gray-400 transition-colors hover:text-gray-600"
+              className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               aria-label={`Edit ${exercise.exercise}`}
             >
               <PencilSimple className="size-5" />
@@ -36,7 +39,7 @@ export default function ExerciseListItem({
             <button
               type="button"
               onClick={() => onDelete(exercise)}
-              className="text-gray-400 transition-colors hover:text-red-500"
+              className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
               aria-label={`Delete ${exercise.exercise}`}
             >
               <Trash className="size-5" />

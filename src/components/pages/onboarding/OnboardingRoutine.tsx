@@ -5,7 +5,9 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import AiRoutinePanel from '~/components/onboarding/AiRoutinePanel'
 import ManualRoutinePanel from '~/components/onboarding/ManualRoutinePanel'
-import OnboardingBackButton from '~/components/onboarding/OnboardingBackButton'
+import OnboardingFooter from '~/components/onboarding/OnboardingFooter'
+import OnboardingProgress from '~/components/onboarding/OnboardingProgress'
+import OnboardingTopBar from '~/components/onboarding/OnboardingTopBar'
 import RoutineDayHeader from '~/components/onboarding/RoutineDayHeader'
 import { Button } from '~/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
@@ -238,14 +240,10 @@ export default function OnboardingRoutine({
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#F5F5F5]">
-      <header className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center px-4 pt-4">
-        <OnboardingBackButton />
-        <h1 className="text-center font-heading text-xl text-blue-600">
-          Your Blueprint
-        </h1>
-        <span aria-hidden="true" />
-      </header>
+    <div className="flex min-h-dvh flex-col bg-background">
+      <OnboardingTopBar>
+        <OnboardingProgress currentStep={2} totalSteps={2} />
+      </OnboardingTopBar>
 
       <RoutineDayHeader
         dayLabel={getTrainingDayLabel(currentDay)}
@@ -257,24 +255,14 @@ export default function OnboardingRoutine({
         onPreviousDay={previousDay ? handlePreviousDay : undefined}
       />
 
-      <main className="flex-1 px-6 py-6">
+      <main className="mx-auto w-full max-w-md flex-1 px-6 pt-6 pb-8">
         <Tabs
           value={mode}
           onValueChange={(value) => setMode(value as RoutineMode)}
         >
-          <TabsList className="mb-6 grid h-11 w-full grid-cols-2 rounded-xl bg-white p-1 shadow-sm">
-            <TabsTrigger
-              value="manual"
-              className="rounded-lg data-active:bg-blue-50 data-active:text-blue-600"
-            >
-              Manual
-            </TabsTrigger>
-            <TabsTrigger
-              value="ai"
-              className="rounded-lg data-active:bg-blue-50 data-active:text-blue-600"
-            >
-              AI Suggestion
-            </TabsTrigger>
+          <TabsList className="mb-6 grid w-full grid-cols-2">
+            <TabsTrigger value="manual">Manual</TabsTrigger>
+            <TabsTrigger value="ai">AI Suggestion</TabsTrigger>
           </TabsList>
 
           <TabsContent value="manual" className="mt-0">
@@ -299,16 +287,17 @@ export default function OnboardingRoutine({
       </main>
 
       {mode === 'manual' && (
-        <footer className="border-t border-gray-200 px-6 py-6">
+        <OnboardingFooter>
           <Button
             type="button"
+            size="lg"
             onClick={handleConfirmAndContinue}
-            className="h-12 w-full rounded-lg bg-blue-600 text-base text-white hover:bg-blue-700"
+            className="w-full"
           >
             Confirm &amp; Continue
             <ArrowRight weight="bold" className="size-4" />
           </Button>
-        </footer>
+        </OnboardingFooter>
       )}
     </div>
   )

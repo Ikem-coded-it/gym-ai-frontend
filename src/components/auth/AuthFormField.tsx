@@ -37,7 +37,7 @@ export default function AuthFormField({
     <Field data-invalid={!!error}>
       <FieldLabel
         htmlFor={id}
-        className="text-xs font-medium uppercase tracking-wide text-gray-500"
+        className="text-[13px] font-medium text-foreground/80"
       >
         {label}
       </FieldLabel>
@@ -47,12 +47,7 @@ export default function AuthFormField({
           type={inputType}
           placeholder={placeholder}
           aria-invalid={!!error}
-          className={cn(
-            'h-auto rounded-none border-0 border-b border-gray-200 bg-transparent px-0 py-2.5 text-base shadow-none',
-            'placeholder:text-gray-400 focus-visible:border-blue-600 focus-visible:ring-0',
-            'aria-invalid:border-destructive aria-invalid:ring-0',
-            isPasswordField && 'pr-9',
-          )}
+          className={cn(isPasswordField && 'pr-11')}
           {...registration}
         />
         {isPasswordField && (
@@ -60,12 +55,12 @@ export default function AuthFormField({
             type="button"
             onClick={() => setIsPasswordVisible((visible) => !visible)}
             aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
-            className="absolute top-1/2 right-0 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-600"
+            className="absolute top-1/2 right-1 flex size-9 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             {isPasswordVisible ? (
-              <EyeSlash weight="bold" className="size-5" />
+              <EyeSlash className="size-5" />
             ) : (
-              <Eye weight="bold" className="size-5" />
+              <Eye className="size-5" />
             )}
           </button>
         )}

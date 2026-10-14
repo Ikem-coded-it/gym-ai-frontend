@@ -23,7 +23,13 @@ export default function ChatQuickReplyChip({
       variant={variant === 'primary' ? 'default' : 'outline'}
       disabled={disabled}
       onClick={onClick}
-      className={cn(className)}
+      className={cn(
+        'h-9 rounded-full px-4',
+        variant === 'primary'
+          ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+          : 'border-primary/25 bg-card text-primary shadow-none hover:border-primary/40 hover:bg-secondary',
+        className
+      )}
     >
       {label}
     </Button>

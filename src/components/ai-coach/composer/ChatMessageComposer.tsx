@@ -51,7 +51,7 @@ export default function ChatMessageComposer({
       aria-label="Quick reply options"
     >
       {hint && (
-        <Label className="font-normal text-muted-foreground">{hint}</Label>
+        <Label className="px-1 text-xs font-medium text-muted-foreground">{hint}</Label>
       )}
 
       {composer.kind === 'day_select' && (

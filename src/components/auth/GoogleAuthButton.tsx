@@ -32,7 +32,8 @@ export default function GoogleAuthButton({ label }: GoogleAuthButtonProps) {
     <Button
       type="button"
       variant="outline"
-      className="h-12 w-full rounded-lg border-gray-200 bg-white text-sm text-gray-900 hover:bg-gray-50"
+      size="lg"
+      className="w-full text-sm"
     >
       <GoogleIcon />
       {label}

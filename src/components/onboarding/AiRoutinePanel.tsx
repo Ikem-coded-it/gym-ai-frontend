@@ -47,16 +47,19 @@ export default function AiRoutinePanel({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-base font-medium text-gray-900">
+      <div className="rounded-2xl bg-card p-5 shadow-card ring-1 ring-foreground/5">
+        <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-primary">
+          <Sparkle weight="fill" className="size-5" />
+        </span>
+        <h3 className="mt-4 text-lg font-semibold text-foreground">
           What would you like to train on {getTrainingDayLabel(day)}?
         </h3>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-muted-foreground">
           Select your focus areas and we&apos;ll craft an optimal routine.
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2">
         {FOCUS_AREAS.map((area) => (
           <SelectableChip
             key={area.value}
@@ -81,7 +84,8 @@ export default function AiRoutinePanel({
         type="button"
         onClick={handleGenerate}
         disabled={isGenerating}
-        className="h-12 w-full rounded-lg bg-blue-600 text-base text-white hover:bg-blue-700"
+        size="lg"
+        className="w-full"
       >
         <Sparkle weight="fill" className="size-4" />
         {isGenerating ? 'Generating...' : 'Generate Routine'}

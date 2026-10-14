@@ -83,11 +83,11 @@ export default function AddExerciseDialog({
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
       <button
         type="button"
         aria-label="Close add exercise dialog"
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 animate-in bg-foreground/40 backdrop-blur-[2px] fade-in-0 duration-150"
         onClick={handleClose}
       />
 
@@ -95,12 +95,13 @@ export default function AddExerciseDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="add-exercise-title"
-        className="relative z-10 w-full max-w-md rounded-2xl bg-white p-5 shadow-lg"
+        className="relative z-10 max-h-[92dvh] w-full max-w-md animate-in overflow-y-auto rounded-t-3xl bg-card p-6 pb-[max(env(safe-area-inset-bottom),1.5rem)] shadow-float duration-200 fade-in-0 slide-in-from-bottom-8 sm:rounded-3xl sm:pb-6 sm:zoom-in-95 sm:slide-in-from-bottom-0"
       >
+        <div aria-hidden="true" className="mx-auto -mt-2 mb-4 h-1 w-10 rounded-full bg-border sm:hidden" />
         <button
           type="button"
           onClick={handleClose}
-          className="absolute top-3 right-3 text-gray-400 transition-colors hover:text-gray-600"
+          className="absolute top-4 right-4 flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label="Close"
         >
           <X className="size-5" />
@@ -109,16 +110,16 @@ export default function AddExerciseDialog({
         <div className="pr-8">
           <h2
             id="add-exercise-title"
-            className="font-heading text-xl text-black"
+            className="text-lg font-semibold text-foreground"
           >
             Add Exercise
           </h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Enter the details for your new exercise.
           </p>
         </div>
 
-        <form onSubmit={onSubmit} className="mt-5 space-y-5">
+        <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <FormField
             id="exercise-name"
             label="Exercise name"
@@ -169,13 +170,13 @@ export default function AddExerciseDialog({
               type="button"
               variant="outline"
               onClick={handleClose}
-              className="h-11 rounded-lg"
+              className="sm:min-w-28"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="h-11 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+              className="sm:min-w-28"
             >
               <Plus weight="bold" className="size-4" />
               Add Exercise

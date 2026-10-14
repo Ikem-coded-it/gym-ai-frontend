@@ -6,7 +6,9 @@ import { useMutation } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import AuthDivider from '~/components/auth/AuthDivider'
 import AuthFormField from '~/components/auth/AuthFormField'
+import AuthLayout from '~/components/auth/AuthLayout'
 import GoogleAuthButton from '~/components/auth/GoogleAuthButton'
 import { Button } from '~/components/ui/button'
 import ApplicationRoutes from '~/config/routes'
@@ -64,104 +66,81 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-dvh bg-[#F5F5F5] px-4 py-8">
-      <div className="mx-auto w-full max-w-md">
-        <div className="text-center">
-          <Link
-            to={ApplicationRoutes.HOME}
-            className="font-heading text-2xl text-blue-600"
-          >
-            GymAI
-          </Link>
-          <h1 className="font-heading mt-6 text-3xl text-black">
-            Create your Blueprint
-          </h1>
-          <p className="mt-2 text-sm text-gray-500">
-            Start your structured fitness journey today.
-          </p>
-        </div>
-
-        <div className="mt-8">
-          <GoogleAuthButton label="Sign up with Google" />
-        </div>
-
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200" />
-          </div>
-          <div className="relative flex justify-center">
-            <span className="bg-[#F5F5F5] px-3 text-xs uppercase tracking-wide text-gray-400">
-              Or sign up with email
-            </span>
-          </div>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <form onSubmit={onSubmit} noValidate className="space-y-6">
-            <AuthFormField
-              id="firstName"
-              label="First name"
-              placeholder="Enter first name"
-              error={errors.firstName}
-              registration={register('firstName')}
-            />
-
-            <AuthFormField
-              id="lastName"
-              label="Last name"
-              placeholder="Enter last name"
-              error={errors.lastName}
-              registration={register('lastName')}
-            />
-
-            <AuthFormField
-              id="email"
-              label="Email"
-              type="email"
-              placeholder="Enter your email address"
-              error={errors.email}
-              registration={register('email')}
-            />
-
-            <AuthFormField
-              id="password"
-              label="Password"
-              type="password"
-              placeholder="Create a password"
-              error={errors.password}
-              registration={register('password')}
-            />
-
-            <AuthFormField
-              id="confirmPassword"
-              label="Confirm password"
-              type="password"
-              placeholder="Repeat your password"
-              error={errors.confirmPassword}
-              registration={register('confirmPassword')}
-            />
-
-            <Button
-              type="submit"
-              disabled={signupMutation.isPending}
-              className="h-12 w-full rounded-lg bg-blue-600 text-base text-white hover:bg-blue-700"
-            >
-              {signupMutation.isPending ? 'Creating account...' : 'Create Account'}
-              <ArrowRight weight="bold" className="size-4" />
-            </Button>
-          </form>
-        </div>
-
-        <p className="mt-6 text-center text-sm text-gray-500">
+    <AuthLayout
+      title="Create your Blueprint"
+      description="Start your structured fitness journey today."
+      footer={
+        <p>
           Already have an account?{' '}
           <Link
             to={ApplicationRoutes.AUTH.LOGIN}
-            className="font-medium text-blue-600 transition-colors hover:text-blue-700"
+            className="font-semibold text-primary transition-colors hover:text-primary/80"
           >
             Login
           </Link>
         </p>
-      </div>
-    </div>
+      }
+    >
+      <GoogleAuthButton label="Sign up with Google" />
+
+      <AuthDivider>or sign up with email</AuthDivider>
+
+      <form onSubmit={onSubmit} noValidate className="space-y-5">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <AuthFormField
+            id="firstName"
+            label="First name"
+            placeholder="Enter first name"
+            error={errors.firstName}
+            registration={register('firstName')}
+          />
+
+          <AuthFormField
+            id="lastName"
+            label="Last name"
+            placeholder="Enter last name"
+            error={errors.lastName}
+            registration={register('lastName')}
+          />
+        </div>
+
+        <AuthFormField
+          id="email"
+          label="Email"
+          type="email"
+          placeholder="Enter your email address"
+          error={errors.email}
+          registration={register('email')}
+        />
+
+        <AuthFormField
+          id="password"
+          label="Password"
+          type="password"
+          placeholder="Create a password"
+          error={errors.password}
+          registration={register('password')}
+        />
+
+        <AuthFormField
+          id="confirmPassword"
+          label="Confirm password"
+          type="password"
+          placeholder="Repeat your password"
+          error={errors.confirmPassword}
+          registration={register('confirmPassword')}
+        />
+
+        <Button
+          type="submit"
+          size="lg"
+          disabled={signupMutation.isPending}
+          className="w-full"
+        >
+          {signupMutation.isPending ? 'Creating account...' : 'Create Account'}
+          <ArrowRight weight="bold" className="size-4" />
+        </Button>
+      </form>
+    </AuthLayout>
   )
 }

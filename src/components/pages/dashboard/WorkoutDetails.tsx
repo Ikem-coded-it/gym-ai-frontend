@@ -1,10 +1,11 @@
-import { Plus } from '@phosphor-icons/react'
+import { Barbell, Plus } from '@phosphor-icons/react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import AddExerciseDialog from '~/components/dashboard/AddExerciseDialog'
 import WorkoutDetailsHeader from '~/components/dashboard/WorkoutDetailsHeader'
 import WorkoutExerciseCard from '~/components/dashboard/WorkoutExerciseCard'
+import EmptyState from '~/components/global/EmptyState'
 import { Button } from '~/components/ui/button'
 import { Spinner } from '~/components/ui/spinner'
 import ApplicationRoutes from '~/config/routes'
@@ -51,16 +52,19 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-[#F5F5F5]">
-        <Spinner className="size-6 text-blue-600" />
+      <div className="flex min-h-dvh items-center justify-center bg-background">
+        <Spinner className="size-6 text-primary" />
       </div>
     )
   }
 
   if (isError) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-[#F5F5F5] px-6">
-        <p className="text-sm text-destructive" role="alert">
+      <div className="flex min-h-dvh items-center justify-center bg-background px-6">
+        <p
+          className="w-full max-w-md rounded-2xl bg-destructive/10 px-4 py-3 text-center text-sm text-destructive"
+          role="alert"
+        >
           {error instanceof Error ? error.message : 'Failed to load workout'}
         </p>
       </div>
@@ -76,42 +80,49 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#F5F5F5]">
+    <div className="flex min-h-dvh flex-col bg-background">
       <WorkoutDetailsHeader
         workoutId={workoutId}
         workoutLabel={workout.dayName}
       />
 
-      <main className="flex-1 px-6 py-6">
+      <main className="mx-auto w-full max-w-md flex-1 px-6 py-6 pb-[max(env(safe-area-inset-bottom),1.5rem)]">
         <div className="flex items-start justify-between gap-3">
-          <h1 className="font-heading text-3xl text-black">{workout.dayName}</h1>
-          <span className="shrink-0 rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-600">
+          <h1 className="font-heading text-3xl text-foreground">{workout.dayName}</h1>
+          <span className="mt-1 shrink-0 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-primary">
             {workout.weekLabel}
           </span>
         </div>
-        <p className="mt-2 text-sm text-gray-500">{workout.focus}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{workout.focus}</p>
 
-        <div className="mt-6 space-y-3">
-          {exercises.map((exercise) => (
-            <WorkoutExerciseCard key={exercise.id} exercise={exercise} />
-          ))}
+        <section className="mt-8">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Exercises
+          </h2>
 
-          {exercises.length === 0 && (
-            <p className="text-sm text-gray-500">
-              No exercises added to this workout yet.
-            </p>
-          )}
+          <div className="mt-3 space-y-3">
+            {exercises.map((exercise) => (
+              <WorkoutExerciseCard key={exercise.id} exercise={exercise} />
+            ))}
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setIsAddExerciseOpen(true)}
-            className="h-auto w-full rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/50 py-4 text-sm font-medium text-blue-600 hover:bg-blue-100/50"
-          >
-            <Plus weight="bold" className="size-4" />
-            Add Exercise
-          </Button>
-        </div>
+            {exercises.length === 0 && (
+              <EmptyState
+                icon={Barbell}
+                title="No exercises added to this workout yet."
+              />
+            )}
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsAddExerciseOpen(true)}
+              className="h-auto w-full rounded-2xl border-2 border-dashed border-primary/25 bg-transparent py-4 text-primary shadow-none hover:bg-secondary/60"
+            >
+              <Plus weight="bold" className="size-4" />
+              Add Exercise
+            </Button>
+          </div>
+        </section>
       </main>
 
       <AddExerciseDialog

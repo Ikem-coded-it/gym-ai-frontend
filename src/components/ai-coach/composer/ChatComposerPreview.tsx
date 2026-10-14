@@ -54,7 +54,7 @@ export default function ChatComposerPreview() {
 
   return (
     <div className="mx-auto max-w-md space-y-4 px-4 py-6">
-      <p className="text-center text-xs text-gray-500">
+      <p className="text-center text-xs text-muted-foreground">
         Composer preview — selections append a user message (no API).
       </p>
       {messages.map((message) => (

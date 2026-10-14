@@ -36,7 +36,7 @@ export default function ChatDaySelectComposer({
   return (
     <div className={cn('flex flex-col gap-2 sm:flex-row sm:items-end', className)}>
       <div className="flex min-w-[10rem] flex-1 flex-col gap-1.5">
-        <Label htmlFor="chat-day-select" className="text-muted-foreground">
+        <Label htmlFor="chat-day-select" className="px-1 text-xs text-muted-foreground">
           Weekday
         </Label>
         <select
@@ -44,7 +44,7 @@ export default function ChatDaySelectComposer({
           value={value}
           onChange={(event) => setValue(event.target.value)}
           disabled={disabled}
-          className="flex h-8 w-full rounded-none border border-input bg-transparent px-2.5 text-xs outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
+          className="flex h-11 w-full rounded-xl border border-input bg-card px-3.5 text-sm text-foreground shadow-card outline-none transition-[border-color,box-shadow] focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30"
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -55,10 +55,9 @@ export default function ChatDaySelectComposer({
       </div>
       <Button
         type="button"
-        size="sm"
         disabled={disabled || !value}
         onClick={handleSubmit}
-        className="shrink-0"
+        className="shrink-0 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
       >
         Send day
       </Button>

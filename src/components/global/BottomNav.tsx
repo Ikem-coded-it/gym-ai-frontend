@@ -32,26 +32,29 @@ export default function BottomNav() {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 border-t border-gray-200 bg-white px-4 pb-3 pt-2">
-      <ul className="mx-auto flex max-w-md items-center justify-between">
+    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-card/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md">
+      <ul className="mx-auto flex h-16 max-w-md items-stretch px-2">
         {navItems.map(({ label, to, icon: Icon, matchPaths }) => {
           const isActive = matchPaths.some(
             (path) => pathname === path || pathname === `${path}/`
           )
 
           return (
-            <li key={label}>
+            <li key={label} className="flex flex-1">
               <Link
                 to={to}
+                aria-current={isActive ? 'page' : undefined}
                 className={cn(
-                  'flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium transition-colors',
-                  isActive ? 'text-blue-600' : 'text-gray-400'
+                  'group flex flex-1 flex-col items-center justify-center gap-1 rounded-xl text-[11px] font-semibold outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/30',
+                  isActive
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
                 )}
               >
                 <span
                   className={cn(
-                    'flex size-9 items-center justify-center rounded-xl',
-                    isActive && 'bg-blue-50'
+                    'flex h-8 w-14 items-center justify-center rounded-full transition-colors',
+                    isActive ? 'bg-secondary' : 'group-hover:bg-muted'
                   )}
                 >
                   <Icon

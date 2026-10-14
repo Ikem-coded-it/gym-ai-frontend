@@ -1,6 +1,6 @@
 'use client'
 
-import { X } from '@phosphor-icons/react'
+import { Trash, X } from '@phosphor-icons/react'
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from '~/components/ui/button'
@@ -50,11 +50,11 @@ export default function DeleteWorkoutConfirmDialog({
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
       <button
         type="button"
         aria-label="Close delete workout dialog"
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 animate-in bg-foreground/40 backdrop-blur-[2px] fade-in-0 duration-150"
         onClick={handleClose}
         disabled={isPending}
       />
@@ -64,35 +64,40 @@ export default function DeleteWorkoutConfirmDialog({
         aria-modal="true"
         aria-labelledby="delete-workout-title"
         aria-describedby="delete-workout-description"
-        className="relative z-10 w-full max-w-md rounded-2xl bg-white p-5 shadow-lg"
+        className="relative z-10 max-h-[92dvh] w-full max-w-md animate-in overflow-y-auto rounded-t-3xl bg-card p-6 pb-[max(env(safe-area-inset-bottom),1.5rem)] shadow-float duration-200 fade-in-0 slide-in-from-bottom-8 sm:rounded-3xl sm:pb-6 sm:zoom-in-95 sm:slide-in-from-bottom-0"
       >
+        <div aria-hidden="true" className="mx-auto -mt-2 mb-4 h-1 w-10 rounded-full bg-border sm:hidden" />
         <button
           type="button"
           onClick={handleClose}
           disabled={isPending}
-          className="absolute top-3 right-3 text-gray-400 transition-colors hover:text-gray-600 disabled:opacity-50"
+          className="absolute top-4 right-4 flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
           aria-label="Close"
         >
           <X className="size-5" />
         </button>
 
-        <div className="pr-8">
+        <span className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <Trash weight="duotone" className="size-6" />
+        </span>
+
+        <div className="mt-4 pr-8">
           <h2
             id="delete-workout-title"
-            className="font-heading text-xl text-black"
+            className="text-lg font-semibold text-foreground"
           >
             Delete workout
           </h2>
-          <p id="delete-workout-description" className="mt-1 text-sm text-gray-500">
+          <p id="delete-workout-description" className="mt-1 text-sm text-muted-foreground">
             {description}
           </p>
         </div>
 
-        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button
             type="button"
             variant="outline"
-            className="h-11 rounded-lg"
+            className="sm:min-w-28"
             disabled={isPending}
             onClick={handleClose}
           >
@@ -101,7 +106,7 @@ export default function DeleteWorkoutConfirmDialog({
           <Button
             type="button"
             variant="destructive"
-            className="h-11 rounded-lg"
+            className="sm:min-w-28"
             disabled={isPending}
             onClick={onConfirm}
           >

@@ -18,8 +18,8 @@ export default function Logout() {
   }, [navigate])
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-[#F5F5F5]">
-      <Spinner className="size-8 text-blue-600" />
+    <div className="flex min-h-dvh items-center justify-center bg-background">
+      <Spinner className="size-8 text-primary" />
       <span className="sr-only">Signing out...</span>
     </div>
   )

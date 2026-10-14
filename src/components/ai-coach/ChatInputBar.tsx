@@ -24,11 +24,11 @@ export default function ChatInputBar({ onSend, disabled }: ChatInputBarProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="fixed inset-x-0 bottom-16 z-10 border-t border-gray-200 bg-white px-4 py-3"
+      className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-20 border-t border-border/70 bg-card/90 px-4 py-3 backdrop-blur-md"
     >
-      <div className="mx-auto flex max-w-md items-center gap-3">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-blue-50">
-          <User className="size-4 text-blue-600" weight="fill" />
+      <div className="mx-auto flex max-w-md items-center gap-2.5">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary">
+          <User className="size-4 text-primary" weight="fill" />
         </div>
 
         <div className="relative flex-1">
@@ -37,13 +37,13 @@ export default function ChatInputBar({ onSend, disabled }: ChatInputBarProps) {
             onChange={(event) => setValue(event.target.value)}
             placeholder="Log your set..."
             disabled={disabled}
-            className="h-11 rounded-full border-0 bg-gray-100 px-4 pr-12 text-sm placeholder:text-gray-400 focus-visible:ring-1 focus-visible:ring-blue-600"
+            className="rounded-full border-transparent bg-muted pr-12 pl-4 focus-visible:bg-card"
           />
           <Button
             type="submit"
             size="icon"
             disabled={disabled || !value.trim()}
-            className="absolute top-1/2 right-1 size-9 -translate-y-1/2 rounded-full bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+            className="absolute top-1/2 right-1 size-9 -translate-y-1/2 rounded-full"
             aria-label="Send message"
           >
             <ArrowUp weight="bold" className="size-4" />

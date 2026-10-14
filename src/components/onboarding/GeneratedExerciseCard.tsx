@@ -30,14 +30,14 @@ export default function GeneratedExerciseCard({
     : `${exercise.reps} reps`
 
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm">
-      <div className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-gray-100">
+    <div className="flex items-center gap-3 rounded-2xl bg-card p-3 pr-2 shadow-card ring-1 ring-foreground/5">
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary [&_svg]:size-5">
         <EquipmentIcon equipment={exercise.equipment} />
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate font-medium text-gray-900">{exercise.name}</p>
-        <p className="mt-1 flex items-center gap-1.5 text-sm text-gray-500">
+        <p className="truncate font-semibold text-foreground">{exercise.name}</p>
+        <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground">
           <EquipmentIcon equipment={exercise.equipment} />
           <span>{exercise.equipment}</span>
           <span aria-hidden="true">•</span>
@@ -47,12 +47,12 @@ export default function GeneratedExerciseCard({
         </p>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 items-center">
         {onEdit && (
           <button
             type="button"
             onClick={() => onEdit(exercise)}
-            className="text-gray-400 transition-colors hover:text-gray-600"
+            className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             aria-label={`Edit ${exercise.name}`}
           >
             <PencilSimple className="size-5" />
@@ -62,7 +62,7 @@ export default function GeneratedExerciseCard({
           <button
             type="button"
             onClick={() => onDelete(exercise)}
-            className="text-gray-400 transition-colors hover:text-red-500"
+            className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
             aria-label={`Delete ${exercise.name}`}
           >
             <Trash className="size-5" />

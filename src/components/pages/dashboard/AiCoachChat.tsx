@@ -1,11 +1,13 @@
 'use client'
 
+import { ChatCircleDots } from '@phosphor-icons/react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import AiCoachHeader from '~/components/ai-coach/AiCoachHeader'
 import ChatInputBar from '~/components/ai-coach/ChatInputBar'
 import ChatMessage from '~/components/ai-coach/ChatMessage'
+import EmptyState from '~/components/global/EmptyState'
 import { Spinner } from '~/components/ui/spinner'
 import { chatQueryKeys } from '~/lib/constants/chat'
 import { workoutQueryKeys } from '~/lib/constants/workout'
@@ -192,23 +194,28 @@ export default function AiCoachChat() {
     <div className="flex min-h-full flex-col">
       <AiCoachHeader />
 
-      <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4 pb-36">
+      <div className="mx-auto w-full max-w-md flex-1 space-y-5 overflow-y-auto px-4 py-5 pb-36">
         {isLoading && (
           <div className="flex justify-center py-8">
-            <Spinner className="size-6 text-blue-600" />
+            <Spinner className="size-6 text-primary" />
           </div>
         )}
 
         {isError && (
-          <p className="text-sm text-destructive" role="alert">
+          <p
+            className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive"
+            role="alert"
+          >
             {error instanceof Error ? error.message : 'Failed to load chat history'}
           </p>
         )}
 
         {!isLoading && !isError && messages.length === 0 && (
-          <p className="py-8 text-center text-sm text-gray-500">
-            Ask GymAI anything about your workout, exercises, or progress.
-          </p>
+          <EmptyState
+            icon={ChatCircleDots}
+            title="Ask GymAI anything about your workout, exercises, or progress."
+            className="mt-6"
+          />
         )}
 
         {!isLoading &&

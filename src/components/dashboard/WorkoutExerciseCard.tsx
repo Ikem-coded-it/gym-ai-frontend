@@ -24,17 +24,17 @@ export default function WorkoutExerciseCard({
   onEdit,
 }: WorkoutExerciseCardProps) {
   return (
-    <Card className="rounded-xl bg-white py-0 shadow-sm ring-0">
-      <CardContent className="flex items-center gap-3 py-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-          <Barbell className="size-5 text-blue-600" weight="fill" />
+    <Card className="py-0">
+      <CardContent className="flex items-center gap-3 px-3 py-3">
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-secondary">
+          <Barbell className="size-5 text-primary" weight="fill" />
         </div>
 
         <div className="min-w-0 flex-1">
-          <CardTitle className="truncate text-base font-semibold text-gray-900">
+          <CardTitle className="truncate text-foreground">
             {exercise.name}
           </CardTitle>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             {formatExerciseStats(exercise)}
           </p>
         </div>
@@ -43,7 +43,7 @@ export default function WorkoutExerciseCard({
           <button
             type="button"
             onClick={() => onEdit(exercise)}
-            className="shrink-0 text-gray-400 transition-colors hover:text-gray-600"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             aria-label={`Edit ${exercise.name}`}
           >
             <PencilSimple className="size-5" />

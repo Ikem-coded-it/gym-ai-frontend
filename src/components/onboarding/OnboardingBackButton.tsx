@@ -11,7 +11,7 @@ export default function OnboardingBackButton() {
       variant="outline"
       size="icon"
       onClick={() => router.history.back()}
-      className="size-10 shrink-0 rounded-full border-gray-200 bg-white text-gray-900 hover:bg-gray-50"
+      className="size-10 shrink-0 rounded-full shadow-card"
       aria-label="Go back"
     >
       <ArrowLeft className="size-5" />

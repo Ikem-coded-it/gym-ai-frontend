@@ -27,32 +27,39 @@ export default function SelectableItem<T>({
       disabled={disabled}
       aria-pressed={selected}
       className={cn(
-        'flex w-full items-center justify-between rounded-xl px-5 py-4 text-left transition-colors',
+        'flex w-full items-center justify-between gap-3 rounded-2xl px-5 py-4 text-left shadow-card outline-none transition-all active:scale-[0.99]',
+        'focus-visible:ring-[3px] focus-visible:ring-ring/30',
         'disabled:cursor-not-allowed disabled:opacity-50',
         selected
-          ? 'bg-blue-50 text-blue-600'
-          : 'bg-white text-gray-900 hover:bg-gray-50',
+          ? 'bg-secondary text-primary ring-2 ring-primary'
+          : 'bg-card text-foreground ring-1 ring-foreground/5 hover:ring-primary/30',
         className
       )}
     >
       <span className="flex flex-col gap-0.5">
-        <span className="text-base font-medium">{label}</span>
+        <span className="text-base font-semibold">{label}</span>
         {description && (
           <span
             className={cn(
               'text-sm',
-              selected ? 'text-blue-500' : 'text-gray-500'
+              selected ? 'text-primary/80' : 'text-muted-foreground'
             )}
           >
             {description}
           </span>
         )}
       </span>
-      {selected && (
-        <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
-          <Check weight="bold" className="size-3.5" />
-        </span>
-      )}
+      <span
+        aria-hidden="true"
+        className={cn(
+          'flex size-6 shrink-0 items-center justify-center rounded-full transition-colors',
+          selected
+            ? 'bg-primary text-primary-foreground'
+            : 'border-2 border-border'
+        )}
+      >
+        {selected && <Check weight="bold" className="size-3.5" />}
+      </span>
     </button>
   )
 }

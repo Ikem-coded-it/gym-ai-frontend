@@ -76,17 +76,18 @@ export default function ChatExerciseFormComposer({
       {rows.map((row, index) => (
         <div
           key={`exercise-row-${index}`}
-          className="space-y-2 rounded-none border border-border bg-background p-3"
+          className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-card"
         >
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-medium text-muted-foreground">
+            <span className="inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-primary">
               Exercise {index + 1}
             </span>
             {rows.length > 1 && (
               <Button
                 type="button"
                 variant="ghost"
-                size="icon-xs"
+                size="icon-sm"
+                className="rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                 disabled={disabled}
                 onClick={() => removeRow(index)}
                 aria-label={`Remove exercise ${index + 1}`}
@@ -97,7 +98,7 @@ export default function ChatExerciseFormComposer({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor={`exercise-name-${index}`} className="text-xs">
+            <Label htmlFor={`exercise-name-${index}`} className="text-xs text-muted-foreground">
               Name
             </Label>
             <Input
@@ -111,9 +112,9 @@ export default function ChatExerciseFormComposer({
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2.5">
             <div className="space-y-1.5">
-              <Label htmlFor={`exercise-sets-${index}`} className="text-xs">
+              <Label htmlFor={`exercise-sets-${index}`} className="text-xs text-muted-foreground">
                 Sets
               </Label>
               <Input
@@ -130,7 +131,7 @@ export default function ChatExerciseFormComposer({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor={`exercise-reps-${index}`} className="text-xs">
+              <Label htmlFor={`exercise-reps-${index}`} className="text-xs text-muted-foreground">
                 Reps
               </Label>
               <Input
@@ -147,7 +148,7 @@ export default function ChatExerciseFormComposer({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor={`exercise-kg-${index}`} className="text-xs">
+              <Label htmlFor={`exercise-kg-${index}`} className="text-xs text-muted-foreground">
                 Weight (kg)
               </Label>
               <Input
@@ -167,7 +168,7 @@ export default function ChatExerciseFormComposer({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor={`exercise-equipment-${index}`} className="text-xs">
+            <Label htmlFor={`exercise-equipment-${index}`} className="text-xs text-muted-foreground">
               Equipment
             </Label>
             <Input
@@ -190,6 +191,7 @@ export default function ChatExerciseFormComposer({
           size="sm"
           disabled={disabled}
           onClick={addRow}
+          className="rounded-full border-primary/25 bg-card px-4 text-primary shadow-none hover:border-primary/40 hover:bg-secondary"
         >
           <Plus className="size-3.5" weight="bold" />
           Add exercise
@@ -202,6 +204,7 @@ export default function ChatExerciseFormComposer({
             size="sm"
             disabled={disabled}
             onClick={handleSuggest}
+            className="rounded-full border-primary/25 bg-card px-4 text-primary shadow-none hover:border-primary/40 hover:bg-secondary"
           >
             {suggestOption.label}
           </Button>
@@ -212,6 +215,7 @@ export default function ChatExerciseFormComposer({
           size="sm"
           disabled={disabled || !canSend}
           onClick={handleSend}
+          className="rounded-full px-4"
         >
           {isPrefill ? 'Update exercises' : 'Send exercises'}
         </Button>

@@ -65,7 +65,7 @@ export default function ManualRoutinePanel({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2">
         {FOCUS_AREAS.map((area) => (
           <SelectableChip
             key={area.value}
@@ -80,8 +80,11 @@ export default function ManualRoutinePanel({
         ))}
       </div>
 
-      <div className="rounded-2xl bg-white p-5 shadow-sm">
-        <form onSubmit={onSubmit} className="space-y-5">
+      <div className="rounded-2xl bg-card p-5 shadow-card ring-1 ring-foreground/5">
+        <h3 className="mb-4 text-base font-semibold text-foreground">
+          Add an exercise
+        </h3>
+        <form onSubmit={onSubmit} className="space-y-4">
           <FormField
             id="name"
             label="Exercise name"
@@ -129,8 +132,8 @@ export default function ManualRoutinePanel({
 
           <Button
             type="submit"
-            variant="outline"
-            className="h-11 w-full rounded-lg border-blue-200 bg-blue-50 text-sm font-medium text-blue-600 hover:bg-blue-100"
+            variant="secondary"
+            className="w-full"
           >
             <Plus weight="bold" className="size-4" />
             Add Exercise
@@ -140,7 +143,14 @@ export default function ManualRoutinePanel({
 
       {exercises.length > 0 && (
         <div className="space-y-3">
-          <h3 className="font-heading text-lg text-black">Current Routine</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground">
+              Current Routine
+            </h3>
+            <span className="text-xs font-medium text-muted-foreground">
+              {exercises.length} {exercises.length === 1 ? 'exercise' : 'exercises'}
+            </span>
+          </div>
           <div className="space-y-3">
             {exercises.map((exercise) => (
               <ExerciseListItem

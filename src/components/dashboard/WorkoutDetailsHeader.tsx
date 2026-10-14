@@ -6,6 +6,7 @@ import { Link, useNavigate, useRouter } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import DeleteWorkoutConfirmDialog from '~/components/dashboard/DeleteWorkoutConfirmDialog'
+import BrandMark from '~/components/global/BrandMark'
 import ApplicationRoutes from '~/config/routes'
 import { workoutQueryKeys } from '~/lib/constants/workout'
 import { cn } from '~/lib/utils'
@@ -67,47 +68,46 @@ export default function WorkoutDetailsHeader({
     : 'Delete this workout? This cannot be undone.'
 
   return (
-    <header className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
+    <header className="sticky top-0 z-30 border-b border-border/70 bg-card/85 backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-md items-center justify-between px-2">
       <button
         type="button"
         onClick={() => router.history.back()}
-        className="text-blue-600"
+        className="flex size-10 items-center justify-center rounded-full text-foreground outline-none transition-colors hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/30"
         aria-label="Go back"
       >
-        <ArrowLeft className="size-6" weight="bold" />
+        <ArrowLeft className="size-5" weight="bold" />
       </button>
 
       <Link
         to={ApplicationRoutes.DASHBOARD.index}
-        className="font-heading text-lg text-blue-600"
+        className="rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/30"
       >
-        GymAI
+        <BrandMark />
       </Link>
 
       <div ref={menuRef} className="relative">
         <button
           type="button"
-          className="text-blue-600 outline-none"
+          className={cn('flex size-10 items-center justify-center rounded-full text-foreground outline-none transition-colors hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/30', menuOpen && 'bg-muted')}
           aria-label="Workout options"
           aria-expanded={menuOpen}
           aria-haspopup="menu"
           onClick={() => setMenuOpen((prev) => !prev)}
         >
-          <DotsThreeVertical className="size-6" weight="bold" />
+          <DotsThreeVertical className="size-5" weight="bold" />
         </button>
 
         {menuOpen && (
           <div
             role="menu"
-            className={cn(
-              'absolute right-0 z-50 mt-2 min-w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-md',
-            )}
+            className="absolute right-0 z-50 mt-2 min-w-44 origin-top-right animate-in rounded-xl bg-popover p-1 shadow-float ring-1 ring-foreground/5 duration-100 fade-in-0 zoom-in-95"
           >
             <button
               type="button"
               role="menuitem"
               disabled={deleteMutation.isPending}
-              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
+              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
               onClick={handleOpenDeleteDialog}
             >
               <Trash className="size-4" />
@@ -115,6 +115,7 @@ export default function WorkoutDetailsHeader({
             </button>
           </div>
         )}
+      </div>
       </div>
 
       <DeleteWorkoutConfirmDialog

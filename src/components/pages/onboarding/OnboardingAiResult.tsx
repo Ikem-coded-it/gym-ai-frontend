@@ -86,19 +86,19 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#F5F5F5]">
+    <div className="flex min-h-dvh flex-col bg-background">
       <AppHeader />
 
-      <main className="flex-1 px-6 py-6">
-        <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-blue-600">
-          <CalendarBlank className="size-4" weight="fill" />
+      <main className="mx-auto w-full max-w-md flex-1 px-6 py-6">
+        <div className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-primary">
+          <CalendarBlank className="size-3.5" weight="fill" />
           {getTrainingDayLabel(day)} Routine
         </div>
 
-        <h1 className="font-heading mt-3 text-3xl text-black">
+        <h1 className="mt-3 font-heading text-3xl text-foreground">
           Generated Blueprint
         </h1>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-muted-foreground">
           Based on your focus areas ({getFocusAreaLabels(focusAreas)}).
         </p>
 
@@ -116,7 +116,8 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
           <Button
             type="button"
             variant="outline"
-            className="h-12 w-full rounded-lg border-2 border-dashed border-gray-300 bg-white text-sm font-medium text-blue-600 hover:bg-gray-50"
+            size="lg"
+            className="w-full border-2 border-dashed border-primary/25 bg-transparent text-sm text-primary shadow-none hover:bg-secondary/60"
           >
             <Plus weight="bold" className="size-4" />
             Add Exercise
@@ -124,9 +125,10 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
 
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
+            size="lg"
             onClick={handleRegenerate}
-            className="h-12 w-full rounded-lg border-blue-200 bg-blue-50 text-sm font-medium text-blue-600 hover:bg-blue-100"
+            className="w-full text-sm"
           >
             <Sparkle weight="fill" className="size-4" />
             Regenerate
@@ -134,8 +136,9 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
 
           <Button
             type="button"
+            size="lg"
             onClick={handleConfirmRoutine}
-            className="h-12 w-full rounded-lg bg-blue-600 text-base text-white hover:bg-blue-700"
+            className="w-full"
           >
             Confirm Routine
             <ArrowRight weight="bold" className="size-4" />

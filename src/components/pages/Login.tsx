@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import AuthDivider from '~/components/auth/AuthDivider'
 import AuthFormField from '~/components/auth/AuthFormField'
+import AuthLayout from '~/components/auth/AuthLayout'
 import GoogleAuthButton from '~/components/auth/GoogleAuthButton'
 import { Button } from '~/components/ui/button'
 import ApplicationRoutes from '~/config/routes'
@@ -80,75 +81,69 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-[#F5F5F5] px-4 py-8">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-sm">
-        <div className="text-center">
-          <h1 className="font-heading text-3xl text-black">Welcome Back</h1>
-          <p className="mt-2 text-sm text-gray-500">
-            Sign in to continue your progress.
-          </p>
-        </div>
-
-        <div className="mt-8">
-          <GoogleAuthButton label="Sign in with Google" />
-        </div>
-
-        <AuthDivider>or</AuthDivider>
-
-        <form
-          onSubmit={onSubmit}
-          noValidate
-          method="post"
-          action="#"
-          className="space-y-6"
-        >
-          <AuthFormField
-            id="email"
-            label="Email"
-            type="email"
-            placeholder="you@example.com"
-            error={errors.email}
-            registration={register('email')}
-          />
-
-          <div className="space-y-2">
-            <AuthFormField
-              id="password"
-              label="Password"
-              type="password"
-              placeholder="••••••••"
-              error={errors.password}
-              registration={register('password')}
-            />
-            <div className="flex justify-end">
-              <Link
-                to={ApplicationRoutes.AUTH.FORGOT_PASSWORD}
-                className="text-xs text-gray-500 transition-colors hover:text-gray-700"
-              >
-                Forgot password?
-              </Link>
-            </div>
-          </div>
-
-          <Button
-            type="submit"
-            disabled={loginMutation.isPending}
-            className="h-12 w-full rounded-lg bg-blue-600 text-base text-white hover:bg-blue-700"
-          >
-            {loginMutation.isPending ? 'Signing in...' : 'Login'}
-          </Button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-gray-500">
+    <AuthLayout
+      title="Welcome Back"
+      description="Sign in to continue your progress."
+      footer={
+        <p>
           Don&apos;t have an account?{' '}
           <Link
             to={ApplicationRoutes.AUTH.REGISTER}
-            className="font-medium text-blue-600 transition-colors hover:text-blue-700"
+            className="font-semibold text-primary transition-colors hover:text-primary/80"
           >
             Sign up
           </Link>
         </p>
-      </div>
-    </div>
+      }
+    >
+      <GoogleAuthButton label="Sign in with Google" />
+
+      <AuthDivider>or continue with email</AuthDivider>
+
+      <form
+        onSubmit={onSubmit}
+        noValidate
+        method="post"
+        action="#"
+        className="space-y-5"
+      >
+        <AuthFormField
+          id="email"
+          label="Email"
+          type="email"
+          placeholder="you@example.com"
+          error={errors.email}
+          registration={register('email')}
+        />
+
+        <div className="space-y-2">
+          <AuthFormField
+            id="password"
+            label="Password"
+            type="password"
+            placeholder="••••••••"
+            error={errors.password}
+            registration={register('password')}
+          />
+          <div className="flex justify-end">
+            <Link
+              to={ApplicationRoutes.AUTH.FORGOT_PASSWORD}
+              className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        </div>
+
+        <Button
+          type="submit"
+          size="lg"
+          disabled={loginMutation.isPending}
+          className="w-full"
+        >
+          {loginMutation.isPending ? 'Signing in...' : 'Login'}
+        </Button>
+      </form>
+    </AuthLayout>
   )
 }

@@ -19,9 +19,9 @@ function DashboardLayout() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#F5F5F5]">
+    <div className="flex min-h-dvh flex-col bg-background">
       {!isAiCoach && <AppHeader />}
-      <main className="flex-1 pb-24">
+      <main className="flex-1 pb-[calc(6rem+env(safe-area-inset-bottom))]">
         <Outlet />
       </main>
       <BottomNav />

@@ -11,7 +11,7 @@ function AiCoachRoute() {
     <Suspense
       fallback={
         <div className="flex justify-center py-12">
-          <Spinner className="size-6 text-blue-600" />
+          <Spinner className="size-6 text-primary" />
         </div>
       }
     >

@@ -1,8 +1,9 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import SelectableItem from '~/components/global/SelectableItem'
-import OnboardingBackButton from '~/components/onboarding/OnboardingBackButton'
+import OnboardingFooter from '~/components/onboarding/OnboardingFooter'
 import OnboardingProgress from '~/components/onboarding/OnboardingProgress'
+import OnboardingTopBar from '~/components/onboarding/OnboardingTopBar'
 import { Button } from '~/components/ui/button'
 import ApplicationRoutes from '~/config/routes'
 import { TRAINING_DAYS } from '~/lib/interfaces/onboarding'
@@ -28,18 +29,19 @@ export default function OnboardingSchedule() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#F5F5F5]">
-      <header className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center px-4 pt-4">
-        <OnboardingBackButton />
-        <div className="flex justify-center">
-          <OnboardingProgress currentStep={1} totalSteps={2} />
-        </div>
-        <span aria-hidden="true" />
-      </header>
+    <div className="flex min-h-dvh flex-col bg-background">
+      <OnboardingTopBar>
+        <OnboardingProgress currentStep={1} totalSteps={2} />
+      </OnboardingTopBar>
 
-      <main className="flex-1 px-6 pt-8">
-        <h1 className="font-heading text-3xl text-black">When do you lift?</h1>
-        <p className="mt-3 text-sm leading-relaxed text-gray-500">
+      <main className="mx-auto w-full max-w-md flex-1 px-6 pt-4 pb-8">
+        <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+          Step 1 · Schedule
+        </p>
+        <h1 className="mt-1 font-heading text-3xl text-foreground">
+          When do you lift?
+        </h1>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           Select your training days. We&apos;ll generate a routine tailored to
           your schedule.
         </p>
@@ -66,15 +68,16 @@ export default function OnboardingSchedule() {
         )}
       </main>
 
-      <footer className="border-t border-gray-200 px-6 py-6">
+      <OnboardingFooter>
         <Button
           type="button"
+          size="lg"
           onClick={handleContinue}
-          className="h-12 w-full rounded-lg bg-blue-600 text-base text-white hover:bg-blue-700"
+          className="w-full"
         >
           Continue
         </Button>
-      </footer>
+      </OnboardingFooter>
     </div>
   )
 }

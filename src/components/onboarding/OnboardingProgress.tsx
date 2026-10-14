@@ -11,7 +11,7 @@ export default function OnboardingProgress({
 }: OnboardingProgressProps) {
   return (
     <div
-      className="flex items-center gap-2"
+      className="flex items-center gap-1.5"
       role="progressbar"
       aria-valuenow={currentStep}
       aria-valuemin={1}
@@ -26,8 +26,8 @@ export default function OnboardingProgress({
           <div
             key={step}
             className={cn(
-              'h-1.5 rounded-full transition-colors',
-              isActive ? 'w-16 bg-blue-600' : 'w-6 bg-gray-200'
+              'h-1.5 w-12 rounded-full transition-colors duration-300',
+              isActive ? 'bg-primary' : 'bg-border'
             )}
           />
         )

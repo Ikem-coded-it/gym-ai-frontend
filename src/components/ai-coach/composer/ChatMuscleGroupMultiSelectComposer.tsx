@@ -1,5 +1,6 @@
 'use client'
 
+import { Check } from '@phosphor-icons/react'
 import { useMemo, useState } from 'react'
 import { Button } from '~/components/ui/button'
 import type { IComposerOption } from '~/lib/interfaces/chat-composer'
@@ -68,7 +69,14 @@ export default function ChatMuscleGroupMultiSelectComposer({
               disabled={disabled}
               onClick={() => toggleValue(option.value)}
               aria-pressed={isSelected}
+              className={cn(
+                'h-9 rounded-full px-4',
+                isSelected
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : 'border-primary/25 bg-card text-primary shadow-none hover:border-primary/40 hover:bg-secondary'
+              )}
             >
+              {isSelected && <Check weight="bold" className="-ml-1 size-3.5" />}
               {option.label}
             </Button>
           )
@@ -77,9 +85,9 @@ export default function ChatMuscleGroupMultiSelectComposer({
 
       <Button
         type="button"
-        size="sm"
         disabled={disabled || selected.length === 0}
         onClick={handleConfirm}
+        className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
       >
         Confirm muscle groups
       </Button>

@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import AuthLayout from '~/components/auth/AuthLayout'
 import { Button } from '~/components/ui/button'
 import { Field, FieldError } from '~/components/ui/field'
 import {
@@ -60,80 +61,84 @@ export default function VerifyEmail() {
   }
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-[#F5F5F5] px-4 py-8">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-sm">
-        <div className="text-center">
-          <h1 className="font-heading text-3xl text-black">Verify your email</h1>
-          <p className="mt-2 text-sm text-gray-500">
-            We sent a 4-digit code to{' '}
-            <span className="font-medium text-gray-700">{userEmail}</span>
+    <AuthLayout
+      title="Verify your email"
+      description={
+        <>
+          We sent a 4-digit code to{' '}
+          <span className="font-medium text-foreground">{userEmail}</span>
+        </>
+      }
+      footer={
+        <>
+          <p>
+            Didn&apos;t receive a code?{' '}
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={isResending}
+              className="font-semibold text-primary transition-colors hover:text-primary/80 disabled:opacity-50"
+            >
+              {isResending ? 'Sending...' : 'Resend code'}
+            </button>
           </p>
-        </div>
+          <p>
+            Wrong email?{' '}
+            <Link
+              to={ApplicationRoutes.AUTH.REGISTER}
+              className="font-semibold text-primary transition-colors hover:text-primary/80"
+            >
+              Go back
+            </Link>
+          </p>
+        </>
+      }
+    >
+      <form onSubmit={onSubmit} className="space-y-6">
+        <Field data-invalid={!!errors.token}>
+          <Controller
+            name="token"
+            control={control}
+            render={({ field }) => (
+              <InputOTP
+                maxLength={4}
+                value={field.value}
+                onChange={field.onChange}
+                containerClassName="justify-center"
+              >
+                <InputOTPGroup className="gap-3">
+                  {Array.from({ length: 4 }, (_, index) => (
+                    <InputOTPSlot
+                      key={index}
+                      index={index}
+                      className="size-14 rounded-xl border border-input text-xl font-semibold first:rounded-xl first:border-l last:rounded-xl aria-invalid:border-destructive"
+                    />
+                  ))}
+                </InputOTPGroup>
+              </InputOTP>
+            )}
+          />
+          <FieldError errors={[errors.token]} className="text-center" />
+        </Field>
 
-        <form onSubmit={onSubmit} className="mt-8 space-y-6">
-          <Field data-invalid={!!errors.token}>
-            <Controller
-              name="token"
-              control={control}
-              render={({ field }) => (
-                <InputOTP
-                  maxLength={4}
-                  value={field.value}
-                  onChange={field.onChange}
-                  containerClassName="justify-center"
-                >
-                  <InputOTPGroup className="gap-3">
-                    {Array.from({ length: 4 }, (_, index) => (
-                      <InputOTPSlot
-                        key={index}
-                        index={index}
-                        className="size-14 rounded-lg border border-gray-200 text-lg font-medium first:rounded-lg first:border-l last:rounded-lg aria-invalid:border-destructive"
-                      />
-                    ))}
-                  </InputOTPGroup>
-                </InputOTP>
-              )}
-            />
-            <FieldError errors={[errors.token]} />
-          </Field>
-
-          {resendMessage && (
-            <p className="text-center text-sm text-green-600" role="status">
-              {resendMessage}
-            </p>
-          )}
-
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="h-12 w-full rounded-lg bg-blue-600 text-base text-white hover:bg-blue-700"
+        {resendMessage && (
+          <p
+            className="rounded-xl bg-emerald-50 px-4 py-2.5 text-center text-sm text-emerald-700"
+            role="status"
           >
-            Verify email
-          </Button>
-        </form>
+            {resendMessage}
+          </p>
+        )}
 
-        <p className="mt-6 text-center text-sm text-gray-500">
-          Didn&apos;t receive a code?{' '}
-          <button
-            type="button"
-            onClick={handleResend}
-            disabled={isResending}
-            className="font-medium text-blue-600 transition-colors hover:text-blue-700 disabled:opacity-50"
-          >
-            {isResending ? 'Sending...' : 'Resend code'}
-          </button>
-        </p>
-
-        <p className="mt-4 text-center text-sm text-gray-500">
-          Wrong email?{' '}
-          <Link
-            to={ApplicationRoutes.AUTH.REGISTER}
-            className="font-medium text-blue-600 transition-colors hover:text-blue-700"
-          >
-            Go back
-          </Link>
-        </p>
-      </div>
-    </div>
+        <Button
+          type="submit"
+          size="lg"
+          disabled={isSubmitting}
+          className="w-full"
+        >
+          Verify email
+        </Button>
+      </form>
+    </AuthLayout>
   )
 }

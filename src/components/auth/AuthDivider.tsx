@@ -6,15 +6,12 @@ type AuthDividerProps = {
 
 export default function AuthDivider({ children }: AuthDividerProps) {
   return (
-    <div className="relative my-6">
-      <div className="absolute inset-0 flex items-center">
-        <div className="w-full border-t border-gray-200" />
-      </div>
-      <div className="relative flex justify-center">
-        <span className="bg-white px-3 text-xs uppercase tracking-wide text-gray-400">
-          {children}
-        </span>
-      </div>
+    <div className="my-6 flex items-center gap-3" role="separator">
+      <div className="h-px flex-1 bg-border" />
+      <span className="text-xs font-medium text-muted-foreground">
+        {children}
+      </span>
+      <div className="h-px flex-1 bg-border" />
     </div>
   )
 }

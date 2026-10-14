@@ -104,7 +104,7 @@ function renderInline(text: string): ReactNode[] {
       nodes.push(
         <code
           key={key}
-          className="rounded bg-black/10 px-1 py-0.5 text-[0.85em]"
+          className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-[0.85em]"
         >
           {match[1]}
         </code>
@@ -127,46 +127,42 @@ function renderInline(text: string): ReactNode[] {
 }
 
 function Heading({ level, text }: { level: number; text: string }) {
-  const className = cn(
-    'mt-3 mb-1 font-mono first:mt-0',
-    HEADING_CLASS[level]
-  )
-  const style = { fontFamily: 'inherit' as const }
+  const className = cn('mt-3 mb-1 first:mt-0', HEADING_CLASS[level])
 
   switch (level) {
     case 1:
       return (
-        <h1 className={className} style={style}>
+        <h1 className={className}>
           {renderInline(text)}
         </h1>
       )
     case 2:
       return (
-        <h2 className={className} style={style}>
+        <h2 className={className}>
           {renderInline(text)}
         </h2>
       )
     case 3:
       return (
-        <h3 className={className} style={style}>
+        <h3 className={className}>
           {renderInline(text)}
         </h3>
       )
     case 4:
       return (
-        <h4 className={className} style={style}>
+        <h4 className={className}>
           {renderInline(text)}
         </h4>
       )
     case 5:
       return (
-        <h5 className={className} style={style}>
+        <h5 className={className}>
           {renderInline(text)}
         </h5>
       )
     default:
       return (
-        <h6 className={className} style={style}>
+        <h6 className={className}>
           {renderInline(text)}
         </h6>
       )

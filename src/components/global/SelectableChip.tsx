@@ -25,19 +25,16 @@ export default function SelectableChip<T>({
       disabled={disabled}
       aria-pressed={selected}
       className={cn(
-        'inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-colors',
+        'inline-flex h-10 items-center gap-1.5 rounded-full border px-4 text-sm font-medium outline-none transition-all active:scale-[0.97]',
+        'focus-visible:ring-[3px] focus-visible:ring-ring/30',
         'disabled:cursor-not-allowed disabled:opacity-50',
         selected
-          ? 'border-blue-600 bg-blue-50 text-blue-600'
-          : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50',
+          ? 'border-primary bg-primary text-primary-foreground shadow-card'
+          : 'border-border bg-card text-foreground hover:border-primary/40 hover:bg-secondary/60',
         className
       )}
     >
-      {selected && (
-        <span className="flex size-4 items-center justify-center rounded-full bg-blue-600 text-white">
-          <Check weight="bold" className="size-2.5" />
-        </span>
-      )}
+      {selected && <Check weight="bold" className="-ml-1 size-3.5" />}
       {label}
     </button>
   )
