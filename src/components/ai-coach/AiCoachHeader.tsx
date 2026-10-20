@@ -13,12 +13,12 @@ export default function AiCoachHeader() {
         <h1 className="flex-1 text-base font-semibold text-foreground">
           Today&apos;s Session
         </h1>
-        <button
+        {/* <button
           type="button"
           className="rounded-full px-3 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-secondary"
         >
           Edit
-        </button>
+        </button> */}
       </div>
     </header>
   )

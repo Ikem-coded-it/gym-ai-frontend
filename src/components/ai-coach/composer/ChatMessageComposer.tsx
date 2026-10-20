@@ -25,6 +25,9 @@ function composerHint(composer: IChatComposer): string | null {
       ? 'Edit your exercises below, then resubmit:'
       : 'Add your exercises below (or use Suggest a plan):'
   }
+  if (composer.kind === 'chips') {
+    return 'Which exercise did you mean?'
+  }
   if (composer.kind === 'day_select' || composer.kind === 'confirm') {
     return 'Or pick a quick reply:'
   }
