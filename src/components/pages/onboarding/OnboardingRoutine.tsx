@@ -209,7 +209,7 @@ export default function OnboardingRoutine({
     onSuccess: (_data, variables) => {
       // console.log('Onboarding created: ', variables)
       toast.success('Onboarding successful and workouts saved!')
-      navigate({ to: ApplicationRoutes.DASHBOARD.index })
+      navigate({ to: ApplicationRoutes.DASHBOARD.AI_COACH })
     },
     onError: (error: Error) => {
       toast.error(error.message)

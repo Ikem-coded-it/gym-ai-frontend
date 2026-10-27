@@ -55,7 +55,7 @@ export default function Login() {
       toast.success('Welcome back!')
       navigate({
         to: user.has_onboarded
-          ? ApplicationRoutes.DASHBOARD.index
+          ? ApplicationRoutes.DASHBOARD.AI_COACH
           : ApplicationRoutes.ONBOARDING.SCHEDULE,
       })
     },

@@ -9,16 +9,16 @@ import { cn } from '~/lib/utils'
 
 const navItems = [
   {
-    label: 'Workout',
-    to: ApplicationRoutes.DASHBOARD.index,
-    icon: Barbell,
-    matchPaths: [ApplicationRoutes.DASHBOARD.index, '/dashboard/'],
-  },
-  {
     label: 'AI Coach',
     to: ApplicationRoutes.DASHBOARD.AI_COACH,
     icon: Robot,
     matchPaths: [ApplicationRoutes.DASHBOARD.AI_COACH],
+  },
+  {
+    label: 'Workout',
+    to: ApplicationRoutes.DASHBOARD.index,
+    icon: Barbell,
+    matchPaths: [ApplicationRoutes.DASHBOARD.index, '/dashboard/'],
   },
   {
     label: 'Profile',

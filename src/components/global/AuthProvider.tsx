@@ -57,7 +57,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       if (isHome) {
         navigate({
           to: data.has_onboarded
-            ? ApplicationRoutes.DASHBOARD.index
+            ? ApplicationRoutes.DASHBOARD.AI_COACH
             : ApplicationRoutes.ONBOARDING.SCHEDULE,
         })
       }

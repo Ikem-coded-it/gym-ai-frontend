@@ -76,7 +76,7 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
     const isLastDay = currentDayIndex === sortedDays.length - 1
 
     if (isLastDay) {
-      navigate({ to: ApplicationRoutes.DASHBOARD.index })
+      navigate({ to: ApplicationRoutes.DASHBOARD.AI_COACH })
       return
     }
 
