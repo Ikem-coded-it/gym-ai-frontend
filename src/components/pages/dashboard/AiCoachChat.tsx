@@ -39,6 +39,7 @@ export default function AiCoachChat() {
   const [messages, setMessages] = useState<IChatMessage[]>([])
   const [isStreaming, setIsStreaming] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const hasInitialScrollRef = useRef(false)
   const abortRef = useRef<AbortController | null>(null)
   const assistantLocalIdRef = useRef<string>('')
   const assistantActiveIdRef = useRef<string>('')
@@ -60,9 +61,15 @@ export default function AiCoachChat() {
   }, [history, isStreaming])
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({
-      behavior: isStreaming ? 'auto' : 'smooth',
-    })
+    if (messages.length === 0) return
+    // Jump straight to the latest message on first load; animate only afterwards.
+    const behavior = !hasInitialScrollRef.current
+      ? 'instant'
+      : isStreaming
+        ? 'auto'
+        : 'smooth'
+    hasInitialScrollRef.current = true
+    bottomRef.current?.scrollIntoView({ behavior })
   }, [messages, isStreaming])
 
   useEffect(() => {

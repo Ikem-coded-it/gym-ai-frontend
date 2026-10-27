@@ -1,7 +1,8 @@
 import { Barbell, Plus } from '@phosphor-icons/react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
 import AddExerciseDialog from '~/components/dashboard/AddExerciseDialog'
 import WorkoutDetailsHeader from '~/components/dashboard/WorkoutDetailsHeader'
 import WorkoutExerciseCard from '~/components/dashboard/WorkoutExerciseCard'
@@ -10,7 +11,10 @@ import { Button } from '~/components/ui/button'
 import { Spinner } from '~/components/ui/spinner'
 import ApplicationRoutes from '~/config/routes'
 import { workoutQueryKeys } from '~/lib/constants/workout'
-import type { IWorkoutExercise } from '~/lib/interfaces/workout'
+import type {
+  IAddWorkoutExercisePayload,
+  IWorkoutExercise,
+} from '~/lib/interfaces/workout'
 import { findWorkoutDetail } from '~/lib/utils/workout'
 import workoutService from '~/services/workout.service'
 
@@ -20,6 +24,7 @@ type WorkoutDetailsProps = {
 
 export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState(false)
   const [exercises, setExercises] = useState<IWorkoutExercise[]>([])
 
@@ -31,6 +36,18 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
   } = useQuery({
     queryKey: workoutQueryKeys.all,
     queryFn: () => workoutService.getWorkouts(),
+  })
+
+  const addExerciseMutation = useMutation({
+    mutationFn: (payload: IAddWorkoutExercisePayload) =>
+      workoutService.addExercise(workoutId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: workoutQueryKeys.all })
+      toast.success('Exercise added')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
   })
 
   const workout = useMemo(() => {
@@ -73,10 +90,6 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
 
   if (!workout) {
     return null
-  }
-
-  const handleAddExercise = (exercise: IWorkoutExercise) => {
-    setExercises((current) => [...current, exercise])
   }
 
   return (
@@ -128,7 +141,8 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
       <AddExerciseDialog
         open={isAddExerciseOpen}
         onOpenChange={setIsAddExerciseOpen}
-        onAddExercise={handleAddExercise}
+        onAddExercise={addExerciseMutation.mutateAsync}
+        isSubmitting={addExerciseMutation.isPending}
       />
     </div>
   )

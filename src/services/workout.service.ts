@@ -1,4 +1,8 @@
-import type { IWorkoutResponse } from '~/lib/interfaces/workout'
+import type {
+  IAddWorkoutExercisePayload,
+  IWorkoutExerciseResponse,
+  IWorkoutResponse,
+} from '~/lib/interfaces/workout'
 import ApiService from './api.service'
 
 class WorkoutService {
@@ -8,6 +12,13 @@ class WorkoutService {
 
   async deleteWorkout(workoutId: string) {
     return ApiService.delete(`/workout/${workoutId}`)
+  }
+
+  async addExercise(workoutId: string, payload: IAddWorkoutExercisePayload) {
+    return ApiService.post<IWorkoutExerciseResponse>(
+      `/workout/${workoutId}/exercises`,
+      payload,
+    )
   }
 }
 

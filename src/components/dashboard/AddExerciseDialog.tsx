@@ -5,7 +5,6 @@ import { createPortal } from 'react-dom'
 import { useForm } from 'react-hook-form'
 import FormField from '~/components/global/FormField'
 import { Button } from '~/components/ui/button'
-import type { IWorkoutExercise } from '~/lib/interfaces/workout'
 import {
   manualExerciseSchema,
   type ManualExerciseFormData,
@@ -14,7 +13,9 @@ import {
 type AddExerciseDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onAddExercise: (exercise: IWorkoutExercise) => void
+  /** Resolves once saved; reject to keep the dialog open. */
+  onAddExercise: (exercise: ManualExerciseFormData) => Promise<unknown>
+  isSubmitting?: boolean
 }
 
 const defaultValues: ManualExerciseFormData = {
@@ -29,6 +30,7 @@ export default function AddExerciseDialog({
   open,
   onOpenChange,
   onAddExercise,
+  isSubmitting = false,
 }: AddExerciseDialogProps) {
   const {
     register,
@@ -66,14 +68,13 @@ export default function AddExerciseDialog({
     onOpenChange(false)
   }
 
-  const onSubmit = handleSubmit((data) => {
-    onAddExercise({
-      id: crypto.randomUUID(),
-      name: data.exercise,
-      sets: data.set_count,
-      reps: String(data.rep_count),
-      weightKg: data.kg_weight,
-    })
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      await onAddExercise(data)
+    } catch {
+      // The parent reports the error; keep the dialog open so nothing is lost.
+      return
+    }
     reset(defaultValues)
     onOpenChange(false)
   })
@@ -176,10 +177,11 @@ export default function AddExerciseDialog({
             </Button>
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="sm:min-w-28"
             >
               <Plus weight="bold" className="size-4" />
-              Add Exercise
+              {isSubmitting ? 'Adding...' : 'Add Exercise'}
             </Button>
           </div>
         </form>

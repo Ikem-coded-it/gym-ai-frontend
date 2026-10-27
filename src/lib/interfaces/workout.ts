@@ -13,6 +13,15 @@ export interface IWorkoutExerciseResponse {
   updated_at: string
 }
 
+/** POST /workout/{id}/exercises body */
+export interface IAddWorkoutExercisePayload {
+  exercise: string
+  set_count: number
+  rep_count: number
+  kg_weight: number
+  equipment_name: string
+}
+
 /** GET /workout item */
 export interface IWorkoutResponse {
   id: string
