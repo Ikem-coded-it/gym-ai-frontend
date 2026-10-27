@@ -14,6 +14,10 @@ class WorkoutService {
     return ApiService.delete(`/workout/${workoutId}`)
   }
 
+  async deleteExercise(workoutId: string, exerciseId: string) {
+    return ApiService.delete(`/workout/${workoutId}/exercises/${exerciseId}`)
+  }
+
   async addExercise(workoutId: string, payload: IAddWorkoutExercisePayload) {
     return ApiService.post<IWorkoutExerciseResponse>(
       `/workout/${workoutId}/exercises`,

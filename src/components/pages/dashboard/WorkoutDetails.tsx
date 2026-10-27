@@ -4,6 +4,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import AddExerciseDialog from '~/components/dashboard/AddExerciseDialog'
+import DeleteWorkoutConfirmDialog from '~/components/dashboard/DeleteWorkoutConfirmDialog'
 import WorkoutDetailsHeader from '~/components/dashboard/WorkoutDetailsHeader'
 import WorkoutExerciseCard from '~/components/dashboard/WorkoutExerciseCard'
 import EmptyState from '~/components/global/EmptyState'
@@ -27,6 +28,8 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
   const queryClient = useQueryClient()
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState(false)
   const [exercises, setExercises] = useState<IWorkoutExercise[]>([])
+  const [exerciseToDelete, setExerciseToDelete] =
+    useState<IWorkoutExercise | null>(null)
 
   const {
     data: workouts,
@@ -44,6 +47,19 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: workoutQueryKeys.all })
       toast.success('Exercise added')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+
+  const deleteExerciseMutation = useMutation({
+    mutationFn: (exerciseId: string) =>
+      workoutService.deleteExercise(workoutId, exerciseId),
+    onSuccess: async () => {
+      setExerciseToDelete(null)
+      await queryClient.invalidateQueries({ queryKey: workoutQueryKeys.all })
+      toast.success('Exercise deleted')
     },
     onError: (error: Error) => {
       toast.error(error.message)
@@ -115,7 +131,11 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
 
           <div className="mt-3 space-y-3">
             {exercises.map((exercise) => (
-              <WorkoutExerciseCard key={exercise.id} exercise={exercise} />
+              <WorkoutExerciseCard
+                key={exercise.id}
+                exercise={exercise}
+                onDelete={setExerciseToDelete}
+              />
             ))}
 
             {exercises.length === 0 && (
@@ -137,6 +157,22 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
           </div>
         </section>
       </main>
+
+      <DeleteWorkoutConfirmDialog
+        open={exerciseToDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setExerciseToDelete(null)
+        }}
+        title="Delete exercise"
+        confirmLabel="Delete exercise"
+        description={`Remove "${exerciseToDelete?.name ?? ''}" from this workout? This cannot be undone.`}
+        isPending={deleteExerciseMutation.isPending}
+        onConfirm={() => {
+          if (exerciseToDelete) {
+            deleteExerciseMutation.mutate(exerciseToDelete.id)
+          }
+        }}
+      />
 
       <AddExerciseDialog
         open={isAddExerciseOpen}

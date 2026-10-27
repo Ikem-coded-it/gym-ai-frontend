@@ -11,6 +11,8 @@ type DeleteWorkoutConfirmDialogProps = {
   description: string
   isPending: boolean
   onConfirm: () => void
+  title?: string
+  confirmLabel?: string
 }
 
 export default function DeleteWorkoutConfirmDialog({
@@ -19,6 +21,8 @@ export default function DeleteWorkoutConfirmDialog({
   description,
   isPending,
   onConfirm,
+  title = 'Delete workout',
+  confirmLabel = 'Delete workout',
 }: DeleteWorkoutConfirmDialogProps) {
   useEffect(() => {
     if (!open) return
@@ -86,7 +90,7 @@ export default function DeleteWorkoutConfirmDialog({
             id="delete-workout-title"
             className="text-lg font-semibold text-foreground"
           >
-            Delete workout
+            {title}
           </h2>
           <p id="delete-workout-description" className="mt-1 text-sm text-muted-foreground">
             {description}
@@ -110,7 +114,7 @@ export default function DeleteWorkoutConfirmDialog({
             disabled={isPending}
             onClick={onConfirm}
           >
-            {isPending ? 'Deleting...' : 'Delete workout'}
+            {isPending ? 'Deleting...' : confirmLabel}
           </Button>
         </div>
       </div>

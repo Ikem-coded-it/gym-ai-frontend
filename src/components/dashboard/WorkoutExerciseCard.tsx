@@ -1,10 +1,11 @@
-import { Barbell, PencilSimple } from '@phosphor-icons/react'
+import { Barbell, PencilSimple, Trash } from '@phosphor-icons/react'
 import { Card, CardContent, CardTitle } from '~/components/ui/card'
 import type { IWorkoutExercise } from '~/lib/interfaces/workout'
 
 type WorkoutExerciseCardProps = {
   exercise: IWorkoutExercise
   onEdit?: (exercise: IWorkoutExercise) => void
+  onDelete?: (exercise: IWorkoutExercise) => void
 }
 
 function formatExerciseStats(exercise: IWorkoutExercise) {
@@ -22,6 +23,7 @@ function formatExerciseStats(exercise: IWorkoutExercise) {
 export default function WorkoutExerciseCard({
   exercise,
   onEdit,
+  onDelete,
 }: WorkoutExerciseCardProps) {
   return (
     <Card className="py-0">
@@ -38,6 +40,17 @@ export default function WorkoutExerciseCard({
             {formatExerciseStats(exercise)}
           </p>
         </div>
+
+        {onDelete && (
+          <button
+            type="button"
+            onClick={() => onDelete(exercise)}
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+            aria-label={`Delete ${exercise.name}`}
+          >
+            <Trash className="size-5" />
+          </button>
+        )}
 
         {onEdit && (
           <button
