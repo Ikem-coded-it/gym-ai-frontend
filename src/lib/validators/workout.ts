@@ -30,3 +30,21 @@ export const exerciseSetSchema = z.object({
 })
 
 export type ExerciseSetFormData = z.infer<typeof exerciseSetSchema>
+
+export const createWorkoutSchema = z.object({
+  day: z.enum(
+    [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ],
+    { message: 'Pick a day' },
+  ),
+  focus_areas: z.array(z.string()).min(1, 'Pick at least one focus area'),
+})
+
+export type CreateWorkoutFormData = z.infer<typeof createWorkoutSchema>

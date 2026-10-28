@@ -1,8 +1,10 @@
 import type {
   IAddExerciseSetPayload,
   IAddWorkoutExercisePayload,
+  ICreateWorkoutPayload,
   IExerciseSetResponse,
   IUpdateExerciseSetPayload,
+  IWorkoutBaseResponse,
   IWorkoutExerciseResponse,
   IWorkoutResponse,
 } from '~/lib/interfaces/workout'
@@ -11,6 +13,10 @@ import ApiService from './api.service'
 class WorkoutService {
   async getWorkouts() {
     return ApiService.get<IWorkoutResponse[]>('/workout/')
+  }
+
+  async createWorkout(payload: ICreateWorkoutPayload) {
+    return ApiService.post<IWorkoutBaseResponse>('/workout/', payload)
   }
 
   async deleteWorkout(workoutId: string) {

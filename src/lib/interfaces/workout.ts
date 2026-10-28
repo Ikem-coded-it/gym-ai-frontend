@@ -39,6 +39,22 @@ export interface IAddWorkoutExercisePayload {
   sets?: IAddExerciseSetPayload[]
 }
 
+/** POST /workout body */
+export interface ICreateWorkoutPayload {
+  day: string
+  muscle_group: string
+}
+
+/** POST /workout response (a workout without its exercises) */
+export interface IWorkoutBaseResponse {
+  id: string
+  user_id: string
+  muscle_group: string
+  day: string
+  created_at: string
+  updated_at: string
+}
+
 /** GET /workout item */
 export interface IWorkoutResponse {
   id: string

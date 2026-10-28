@@ -1,14 +1,24 @@
 import { CalendarBlank, Plus } from '@phosphor-icons/react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import AddWorkoutSessionDialog from '~/components/dashboard/AddWorkoutSessionDialog'
 import WorkoutScheduleCard from '~/components/dashboard/WorkoutScheduleCard'
 import EmptyState from '~/components/global/EmptyState'
 import { Button } from '~/components/ui/button'
 import { Spinner } from '~/components/ui/spinner'
+import ApplicationRoutes from '~/config/routes'
 import { workoutQueryKeys } from '~/lib/constants/workout'
 import { mapWorkoutsToSessions } from '~/lib/utils/workout'
+import type { CreateWorkoutFormData } from '~/lib/validators/workout'
 import workoutService from '~/services/workout.service'
 
 export default function WorkoutOverview() {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const [isAddSessionOpen, setIsAddSessionOpen] = useState(false)
+
   const {
     data: workouts,
     isLoading,
@@ -20,6 +30,28 @@ export default function WorkoutOverview() {
   })
 
   const sessions = workouts ? mapWorkoutsToSessions(workouts) : []
+  const takenDays = workouts?.map((workout) => workout.day) ?? []
+
+  const createWorkoutMutation = useMutation({
+    mutationFn: (data: CreateWorkoutFormData) =>
+      workoutService.createWorkout({
+        day: data.day,
+        muscle_group: data.focus_areas.join(','),
+      }),
+    onSuccess: async (workout) => {
+      // Refetch first: the details page redirects away if it can't find the workout.
+      await queryClient.invalidateQueries({ queryKey: workoutQueryKeys.all })
+      setIsAddSessionOpen(false)
+      toast.success('Workout created. Add your exercises.')
+      navigate({
+        to: ApplicationRoutes.DASHBOARD.WORKOUT_DETAIL,
+        params: { workoutId: workout.id },
+      })
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
 
   return (
     <div className="mx-auto w-full max-w-md px-6 py-6">
@@ -70,11 +102,20 @@ export default function WorkoutOverview() {
         type="button"
         variant="secondary"
         size="lg"
+        onClick={() => setIsAddSessionOpen(true)}
         className="mt-6 w-full text-sm"
       >
         <Plus weight="bold" className="size-4" />
         Add Extra Session
       </Button>
+
+      <AddWorkoutSessionDialog
+        open={isAddSessionOpen}
+        onOpenChange={setIsAddSessionOpen}
+        takenDays={takenDays}
+        onCreate={createWorkoutMutation.mutateAsync}
+        isSubmitting={createWorkoutMutation.isPending}
+      />
     </div>
   )
 }
