@@ -1,5 +1,6 @@
 import { Barbell, PencilSimple, Trash } from '@phosphor-icons/react'
 import type { IExercise } from '~/lib/interfaces/onboarding'
+import { summarizeSets } from '~/lib/utils/exercise-sets'
 
 type ExerciseListItemProps = {
   exercise: IExercise
@@ -20,7 +21,8 @@ export default function ExerciseListItem({
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold text-foreground">{exercise.exercise}</p>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          {exercise.set_count} sets x {exercise.rep_count} reps • {exercise.kg_weight}kg
+          {exercise.equipment_name ? `${exercise.equipment_name} • ` : ''}
+          {summarizeSets(exercise.sets)}
         </p>
       </div>
       {(onEdit || onDelete) && (

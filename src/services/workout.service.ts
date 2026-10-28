@@ -1,5 +1,8 @@
 import type {
+  IAddExerciseSetPayload,
   IAddWorkoutExercisePayload,
+  IExerciseSetResponse,
+  IUpdateExerciseSetPayload,
   IWorkoutExerciseResponse,
   IWorkoutResponse,
 } from '~/lib/interfaces/workout'
@@ -22,6 +25,35 @@ class WorkoutService {
     return ApiService.post<IWorkoutExerciseResponse>(
       `/workout/${workoutId}/exercises`,
       payload,
+    )
+  }
+
+  async addSet(
+    workoutId: string,
+    exerciseId: string,
+    payload: IAddExerciseSetPayload,
+  ) {
+    return ApiService.post<IExerciseSetResponse>(
+      `/workout/${workoutId}/exercises/${exerciseId}/sets`,
+      payload,
+    )
+  }
+
+  async updateSet(
+    workoutId: string,
+    exerciseId: string,
+    setId: string,
+    payload: IUpdateExerciseSetPayload,
+  ) {
+    return ApiService.patch<IExerciseSetResponse>(
+      `/workout/${workoutId}/exercises/${exerciseId}/sets/${setId}`,
+      payload,
+    )
+  }
+
+  async deleteSet(workoutId: string, exerciseId: string, setId: string) {
+    return ApiService.delete(
+      `/workout/${workoutId}/exercises/${exerciseId}/sets/${setId}`,
     )
   }
 }

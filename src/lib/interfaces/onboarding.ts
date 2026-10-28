@@ -1,3 +1,5 @@
+import type { IAddExerciseSetPayload } from '~/lib/interfaces/workout'
+
 export type TrainingDay =
   | 'monday'
   | 'tuesday'
@@ -43,21 +45,27 @@ export const FOCUS_AREAS: { value: FocusArea; label: string }[] = [
 ]
 
 export interface IExercise {
-  id: string | null
+  id: string
   exercise: string
-  set_count: number
-  rep_count: number
-  kg_weight: number
   equipment_name: string
+  /** One entry per set, each with its own reps and weight. */
+  sets: IAddExerciseSetPayload[]
+}
+
+/** Exercise as sent to POST /onboarding/workouts. */
+export interface IOnboardingExercisePayload {
+  exercise: string
+  equipment_name: string | null
+  sets: IAddExerciseSetPayload[]
 }
 
 export interface OnboardingPayload {
   workouts: {
     workout: {
-      muscle_group: FocusArea,
+      muscle_group: string,
       day: TrainingDay,
     },
-    exercises: IExercise[],
+    exercises: IOnboardingExercisePayload[],
   }[]
 }
 

@@ -1,4 +1,5 @@
 import z from 'zod'
+import { exerciseSetSchema } from '~/lib/validators/workout'
 
 const trainingDaySchema = z.enum([
   'monday',
@@ -20,10 +21,8 @@ export type ScheduleFormData = z.infer<typeof scheduleSchema>
 
 export const manualExerciseSchema = z.object({
   exercise: z.string().min(1, 'Exercise name is required'),
-  set_count: z.number().min(1, 'Sets must be at least 1'),
-  rep_count: z.number().min(1, 'Reps are required'),
-  kg_weight: z.number().min(0, 'Weight must be 0 or more'),
-  equipment_name: z.string().min(1, 'Equipment is required'),
+  equipment_name: z.string(),
+  sets: z.array(exerciseSetSchema).min(1, 'Add at least one set'),
 })
 
 export type ManualExerciseFormData = z.infer<typeof manualExerciseSchema>

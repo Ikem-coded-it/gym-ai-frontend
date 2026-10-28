@@ -12,12 +12,16 @@ export interface IComposerOption {
   value: string
 }
 
-export interface IComposerExercise {
-  exercise: string
-  set_count: number
+export interface IComposerSet {
   rep_count: number
   kg_weight?: number | null
+  notes?: string | null
+}
+
+export interface IComposerExercise {
+  exercise: string
   equipment_name?: string | null
+  sets: IComposerSet[]
 }
 
 export interface IChatComposer {

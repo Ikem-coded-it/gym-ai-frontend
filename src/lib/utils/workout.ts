@@ -56,9 +56,13 @@ function mapExerciseToUi(exercise: IWorkoutExerciseResponse): IWorkoutExercise {
   return {
     id: exercise.id,
     name: exercise.exercise,
-    sets: exercise.set_count,
-    reps: String(exercise.rep_count),
-    weightKg: exercise.kg_weight,
+    equipment: exercise.equipment_name,
+    sets: exercise.exercise_sets.map((set) => ({
+      id: set.id,
+      reps: set.rep_count,
+      weightKg: set.kg_weight,
+      notes: set.notes,
+    })),
   }
 }
 

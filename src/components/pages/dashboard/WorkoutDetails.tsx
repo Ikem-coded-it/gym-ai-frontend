@@ -4,6 +4,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import AddExerciseDialog from '~/components/dashboard/AddExerciseDialog'
+import ExerciseSetDialog from '~/components/dashboard/ExerciseSetDialog'
 import DeleteWorkoutConfirmDialog from '~/components/dashboard/DeleteWorkoutConfirmDialog'
 import WorkoutDetailsHeader from '~/components/dashboard/WorkoutDetailsHeader'
 import WorkoutExerciseCard from '~/components/dashboard/WorkoutExerciseCard'
@@ -13,9 +14,13 @@ import { Spinner } from '~/components/ui/spinner'
 import ApplicationRoutes from '~/config/routes'
 import { workoutQueryKeys } from '~/lib/constants/workout'
 import type {
-  IAddWorkoutExercisePayload,
+  IExerciseSet,
   IWorkoutExercise,
 } from '~/lib/interfaces/workout'
+import type {
+  ExerciseSetFormData,
+  WorkoutExerciseFormData,
+} from '~/lib/validators/workout'
 import { findWorkoutDetail } from '~/lib/utils/workout'
 import workoutService from '~/services/workout.service'
 
@@ -30,6 +35,15 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
   const [exercises, setExercises] = useState<IWorkoutExercise[]>([])
   const [exerciseToDelete, setExerciseToDelete] =
     useState<IWorkoutExercise | null>(null)
+  // add a set when `set` is undefined, edit it otherwise
+  const [setDialog, setSetDialog] = useState<{
+    exercise: IWorkoutExercise
+    set?: IExerciseSet
+  } | null>(null)
+  const [setToDelete, setSetToDelete] = useState<{
+    exercise: IWorkoutExercise
+    set: IExerciseSet
+  } | null>(null)
 
   const {
     data: workouts,
@@ -42,8 +56,11 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
   })
 
   const addExerciseMutation = useMutation({
-    mutationFn: (payload: IAddWorkoutExercisePayload) =>
-      workoutService.addExercise(workoutId, payload),
+    mutationFn: (data: WorkoutExerciseFormData) =>
+      workoutService.addExercise(workoutId, {
+        exercise: data.exercise,
+        equipment_name: data.equipment_name || null,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: workoutQueryKeys.all })
       toast.success('Exercise added')
@@ -60,6 +77,50 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
       setExerciseToDelete(null)
       await queryClient.invalidateQueries({ queryKey: workoutQueryKeys.all })
       toast.success('Exercise deleted')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+
+  const saveSetMutation = useMutation({
+    mutationFn: async (data: ExerciseSetFormData) => {
+      if (!setDialog) throw new Error('No exercise selected')
+      const { exercise, set } = setDialog
+      if (set) {
+        return workoutService.updateSet(workoutId, exercise.id, set.id, {
+          rep_count: data.rep_count,
+          kg_weight: data.kg_weight ?? null,
+          notes: data.notes || null,
+        })
+      }
+      return workoutService.addSet(workoutId, exercise.id, {
+        rep_count: data.rep_count,
+        kg_weight: data.kg_weight ?? null,
+        notes: data.notes || null,
+      })
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: workoutQueryKeys.all })
+      toast.success(setDialog?.set ? 'Set updated' : 'Set added')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+
+  const deleteSetMutation = useMutation({
+    mutationFn: ({
+      exercise,
+      set,
+    }: {
+      exercise: IWorkoutExercise
+      set: IExerciseSet
+    }) => workoutService.deleteSet(workoutId, exercise.id, set.id),
+    onSuccess: async () => {
+      setSetToDelete(null)
+      await queryClient.invalidateQueries({ queryKey: workoutQueryKeys.all })
+      toast.success('Set deleted')
     },
     onError: (error: Error) => {
       toast.error(error.message)
@@ -135,6 +196,13 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
                 key={exercise.id}
                 exercise={exercise}
                 onDelete={setExerciseToDelete}
+                onAddSet={(target) => setSetDialog({ exercise: target })}
+                onEditSet={(target, set) =>
+                  setSetDialog({ exercise: target, set })
+                }
+                onDeleteSet={(target, set) =>
+                  setSetToDelete({ exercise: target, set })
+                }
               />
             ))}
 
@@ -172,6 +240,31 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
             deleteExerciseMutation.mutate(exerciseToDelete.id)
           }
         }}
+      />
+
+      <DeleteWorkoutConfirmDialog
+        open={setToDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setSetToDelete(null)
+        }}
+        title="Delete set"
+        confirmLabel="Delete set"
+        description={`Remove this set from "${setToDelete?.exercise.name ?? ''}"? This cannot be undone.`}
+        isPending={deleteSetMutation.isPending}
+        onConfirm={() => {
+          if (setToDelete) deleteSetMutation.mutate(setToDelete)
+        }}
+      />
+
+      <ExerciseSetDialog
+        open={setDialog !== null}
+        onOpenChange={(open) => {
+          if (!open) setSetDialog(null)
+        }}
+        exerciseName={setDialog?.exercise.name ?? ''}
+        set={setDialog?.set}
+        onSubmit={saveSetMutation.mutateAsync}
+        isSubmitting={saveSetMutation.isPending}
       />
 
       <AddExerciseDialog

@@ -28,18 +28,22 @@ const DEMO_EXERCISES: IExercise[] = [
   {
     id: '1',
     exercise: 'Barbell Squat',
-    set_count: 3,
-    rep_count: 5,
-    kg_weight: 60,
     equipment_name: 'Barbell',
+    sets: [
+      { rep_count: 5, kg_weight: 60 },
+      { rep_count: 5, kg_weight: 60 },
+      { rep_count: 5, kg_weight: 65 },
+    ],
   },
   {
     id: '2',
     exercise: 'Romanian Deadlift',
-    set_count: 3,
-    rep_count: 8,
-    kg_weight: 50,
     equipment_name: 'Barbell',
+    sets: [
+      { rep_count: 8, kg_weight: 50 },
+      { rep_count: 8, kg_weight: 50 },
+      { rep_count: 8, kg_weight: 50 },
+    ],
   },
 ]
 
@@ -194,10 +198,12 @@ export default function OnboardingRoutine({
           },
           exercises: routine.exercises.map((exercise) => ({
             exercise: exercise.exercise,
-            set_count: exercise.set_count,
-            rep_count: exercise.rep_count,
-            kg_weight: exercise.kg_weight,
-            equipment_name: exercise.equipment_name,
+            equipment_name: exercise.equipment_name || null,
+            sets: exercise.sets.map((set) => ({
+              rep_count: set.rep_count,
+              kg_weight: set.kg_weight ?? null,
+              notes: set.notes || null,
+            })),
           })),
         }
       }),

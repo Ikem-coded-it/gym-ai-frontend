@@ -6,23 +6,20 @@ import { useForm } from 'react-hook-form'
 import FormField from '~/components/global/FormField'
 import { Button } from '~/components/ui/button'
 import {
-  manualExerciseSchema,
-  type ManualExerciseFormData,
-} from '~/lib/validators/onboarding'
+  workoutExerciseSchema,
+  type WorkoutExerciseFormData,
+} from '~/lib/validators/workout'
 
 type AddExerciseDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   /** Resolves once saved; reject to keep the dialog open. */
-  onAddExercise: (exercise: ManualExerciseFormData) => Promise<unknown>
+  onAddExercise: (exercise: WorkoutExerciseFormData) => Promise<unknown>
   isSubmitting?: boolean
 }
 
-const defaultValues: ManualExerciseFormData = {
+const defaultValues: WorkoutExerciseFormData = {
   exercise: '',
-  set_count: 3,
-  rep_count: 10,
-  kg_weight: 0,
   equipment_name: '',
 }
 
@@ -37,8 +34,8 @@ export default function AddExerciseDialog({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<ManualExerciseFormData>({
-    resolver: zodResolver(manualExerciseSchema),
+  } = useForm<WorkoutExerciseFormData>({
+    resolver: zodResolver(workoutExerciseSchema),
     defaultValues,
   })
 
@@ -116,7 +113,7 @@ export default function AddExerciseDialog({
             Add Exercise
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Enter the details for your new exercise.
+            Name the exercise and its equipment, then add sets to it.
           </p>
         </div>
 
@@ -129,42 +126,13 @@ export default function AddExerciseDialog({
             registration={register('exercise')}
           />
 
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              id="exercise-sets"
-              label="Sets"
-              type="number"
-              placeholder="3"
-              error={errors.set_count}
-              registration={register('set_count', { valueAsNumber: true })}
-            />
-            <FormField
-              id="exercise-reps"
-              label="Reps"
-              type="number"
-              placeholder="8"
-              error={errors.rep_count}
-              registration={register('rep_count', { valueAsNumber: true })}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              id="exercise-weight"
-              label="Weight (kg)"
-              type="number"
-              placeholder="60"
-              error={errors.kg_weight}
-              registration={register('kg_weight', { valueAsNumber: true })}
-            />
-            <FormField
-              id="exercise-equipment"
-              label="Equipment"
-              placeholder="Barbell"
-              error={errors.equipment_name}
-              registration={register('equipment_name')}
-            />
-          </div>
+          <FormField
+            id="exercise-equipment"
+            label="Equipment (optional)"
+            placeholder="Barbell"
+            error={errors.equipment_name}
+            registration={register('equipment_name')}
+          />
 
           <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
             <Button

@@ -13,9 +13,12 @@ import {
   areAllExerciseRowsComplete,
   composerExercisesToRows,
   createEmptyExerciseRow,
+  createEmptySetRow,
   formatExercisesMessage,
   parseKgWeightInput,
+  parseRepsInput,
   type ExerciseDraftRow,
+  type SetDraftRow,
 } from '~/lib/utils/exercise-composer'
 import { cn } from '~/lib/utils'
 
@@ -39,13 +42,53 @@ export default function ChatExerciseFormComposer({
     composerExercisesToRows(initialExercises)
   )
 
-  const updateRow = (
-    index: number,
-    patch: Partial<ExerciseDraftRow>
-  ) => {
+  const updateRow = (index: number, patch: Partial<ExerciseDraftRow>) => {
     setRows((current) =>
       current.map((row, rowIndex) =>
         rowIndex === index ? { ...row, ...patch } : row
+      )
+    )
+  }
+
+  const updateSet = (
+    rowIndex: number,
+    setIndex: number,
+    patch: Partial<SetDraftRow>
+  ) => {
+    setRows((current) =>
+      current.map((row, index) =>
+        index === rowIndex
+          ? {
+              ...row,
+              sets: row.sets.map((set, i) =>
+                i === setIndex ? { ...set, ...patch } : set
+              ),
+            }
+          : row
+      )
+    )
+  }
+
+  const addSet = (rowIndex: number) => {
+    setRows((current) =>
+      current.map((row, index) => {
+        if (index !== rowIndex) return row
+        // New set starts from the previous one, the usual starting point for the next set.
+        const last = row.sets[row.sets.length - 1]
+        return {
+          ...row,
+          sets: [...row.sets, last ? { ...last } : createEmptySetRow()],
+        }
+      })
+    )
+  }
+
+  const removeSet = (rowIndex: number, setIndex: number) => {
+    setRows((current) =>
+      current.map((row, index) =>
+        index === rowIndex && row.sets.length > 1
+          ? { ...row, sets: row.sets.filter((_, i) => i !== setIndex) }
+          : row
       )
     )
   }
@@ -97,89 +140,125 @@ export default function ChatExerciseFormComposer({
             )}
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor={`exercise-name-${index}`} className="text-xs text-muted-foreground">
-              Name
-            </Label>
-            <Input
-              id={`exercise-name-${index}`}
-              value={row.exercise}
-              disabled={disabled}
-              placeholder="Bench Press"
-              onChange={(event) =>
-                updateRow(index, { exercise: event.target.value })
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-2 gap-2.5">
             <div className="space-y-1.5">
-              <Label htmlFor={`exercise-sets-${index}`} className="text-xs text-muted-foreground">
-                Sets
+              <Label htmlFor={`exercise-name-${index}`} className="text-xs text-muted-foreground">
+                Name
               </Label>
               <Input
-                id={`exercise-sets-${index}`}
-                type="number"
-                min={1}
+                id={`exercise-name-${index}`}
+                value={row.exercise}
                 disabled={disabled}
-                value={row.set_count}
+                placeholder="Bench Press"
                 onChange={(event) =>
-                  updateRow(index, {
-                    set_count: Number(event.target.value) || 0,
-                  })
+                  updateRow(index, { exercise: event.target.value })
                 }
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor={`exercise-reps-${index}`} className="text-xs text-muted-foreground">
-                Reps
+              <Label htmlFor={`exercise-equipment-${index}`} className="text-xs text-muted-foreground">
+                Equipment
               </Label>
               <Input
-                id={`exercise-reps-${index}`}
-                type="number"
-                min={1}
+                id={`exercise-equipment-${index}`}
+                value={row.equipment_name}
                 disabled={disabled}
-                value={row.rep_count}
+                placeholder="barbell"
                 onChange={(event) =>
-                  updateRow(index, {
-                    rep_count: Number(event.target.value) || 0,
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor={`exercise-kg-${index}`} className="text-xs text-muted-foreground">
-                Weight (kg)
-              </Label>
-              <Input
-                id={`exercise-kg-${index}`}
-                type="number"
-                min={0}
-                disabled={disabled}
-                placeholder="Bodyweight"
-                value={row.kg_weight ?? ''}
-                onChange={(event) =>
-                  updateRow(index, {
-                    kg_weight: parseKgWeightInput(event.target.value),
-                  })
+                  updateRow(index, { equipment_name: event.target.value })
                 }
               />
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor={`exercise-equipment-${index}`} className="text-xs text-muted-foreground">
-              Equipment
-            </Label>
-            <Input
-              id={`exercise-equipment-${index}`}
-              value={row.equipment_name}
+          <div className="space-y-2">
+            {row.sets.map((set, setIndex) => (
+              <div
+                key={`exercise-${index}-set-${setIndex}`}
+                className="space-y-2 rounded-xl bg-muted/60 p-3"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-primary">
+                    Set {setIndex + 1}
+                  </span>
+                  {row.sets.length > 1 && (
+                    <button
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => removeSet(index, setIndex)}
+                      className="flex size-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                      aria-label={`Remove set ${setIndex + 1} of exercise ${index + 1}`}
+                    >
+                      <Trash className="size-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor={`exercise-${index}-set-${setIndex}-reps`}
+                      className="text-xs text-muted-foreground"
+                    >
+                      Reps
+                    </Label>
+                    <Input
+                      id={`exercise-${index}-set-${setIndex}-reps`}
+                      type="number"
+                      min={1}
+                      disabled={disabled}
+                      value={set.rep_count ?? ''}
+                      onChange={(event) =>
+                        updateSet(index, setIndex, {
+                          rep_count: parseRepsInput(event.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor={`exercise-${index}-set-${setIndex}-kg`}
+                      className="text-xs text-muted-foreground"
+                    >
+                      Weight (kg)
+                    </Label>
+                    <Input
+                      id={`exercise-${index}-set-${setIndex}-kg`}
+                      type="number"
+                      min={0}
+                      disabled={disabled}
+                      placeholder="Bodyweight"
+                      value={set.kg_weight ?? ''}
+                      onChange={(event) =>
+                        updateSet(index, setIndex, {
+                          kg_weight: parseKgWeightInput(event.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <Input
+                  value={set.notes}
+                  disabled={disabled}
+                  placeholder="Notes (optional)"
+                  aria-label={`Notes for set ${setIndex + 1} of exercise ${index + 1}`}
+                  onChange={(event) =>
+                    updateSet(index, setIndex, { notes: event.target.value })
+                  }
+                />
+              </div>
+            ))}
+
+            <button
+              type="button"
               disabled={disabled}
-              placeholder="barbell"
-              onChange={(event) =>
-                updateRow(index, { equipment_name: event.target.value })
-              }
-            />
+              onClick={() => addSet(index)}
+              className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-primary/25 py-2 text-sm font-medium text-primary transition-colors hover:bg-secondary/60"
+            >
+              <Plus weight="bold" className="size-3.5" />
+              Add set
+            </button>
           </div>
         </div>
       ))}
