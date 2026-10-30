@@ -1,19 +1,6 @@
-import { UserCircle } from '@phosphor-icons/react'
 import { createFileRoute } from '@tanstack/react-router'
-import EmptyState from '~/components/global/EmptyState'
+import Profile from '~/components/pages/dashboard/Profile'
 
 export const Route = createFileRoute('/dashboard/profile')({
-  component: ProfilePage,
+  component: Profile,
 })
-
-function ProfilePage() {
-  return (
-    <div className="mx-auto flex min-h-[50dvh] w-full max-w-md items-center px-6">
-      <EmptyState
-        icon={UserCircle}
-        title="Profile coming soon."
-        className="w-full"
-      />
-    </div>
-  )
-}

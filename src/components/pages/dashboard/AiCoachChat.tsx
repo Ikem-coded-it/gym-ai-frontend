@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import AiCoachHeader from '~/components/ai-coach/AiCoachHeader'
 import ChatInputBar from '~/components/ai-coach/ChatInputBar'
 import ChatMessage from '~/components/ai-coach/ChatMessage'
+import QuickMessageChips from '~/components/ai-coach/QuickMessageChips'
 import EmptyState from '~/components/global/EmptyState'
 import { Spinner } from '~/components/ui/spinner'
 import { chatQueryKeys } from '~/lib/constants/chat'
@@ -201,7 +202,7 @@ export default function AiCoachChat() {
     <div className="flex min-h-full flex-col">
       <AiCoachHeader />
 
-      <div className="mx-auto w-full max-w-md flex-1 space-y-5 overflow-y-auto px-4 py-5 pb-36">
+      <div className="mx-auto w-full max-w-md flex-1 space-y-5 overflow-y-auto px-4 py-5 pb-60">
         {isLoading && (
           <div className="flex justify-center py-8">
             <Spinner className="size-6 text-primary" />
@@ -239,6 +240,12 @@ export default function AiCoachChat() {
               composerDisabled={isStreaming || isLoading}
             />
           ))}
+        {!isLoading && !isError && (
+          <QuickMessageChips
+            onSend={handleSend}
+            disabled={isStreaming}
+          />
+        )}
         <div ref={bottomRef} />
       </div>
 

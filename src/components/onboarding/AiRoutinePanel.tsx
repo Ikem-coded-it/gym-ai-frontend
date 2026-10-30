@@ -15,6 +15,7 @@ type AiRoutinePanelProps = {
   selectedFocusAreas: FocusArea[]
   onToggleFocusArea: (area: FocusArea) => void
   onGenerate: () => void
+  isGenerating?: boolean
 }
 
 export default function AiRoutinePanel({
@@ -22,11 +23,11 @@ export default function AiRoutinePanel({
   selectedFocusAreas,
   onToggleFocusArea,
   onGenerate,
+  isGenerating = false,
 }: AiRoutinePanelProps) {
   const [error, setError] = useState<string | null>(null)
-  const [isGenerating, setIsGenerating] = useState(false)
 
-  const handleGenerate = async () => {
+  const handleGenerate = () => {
     const result = aiFocusSchema.safeParse({
       focusAreas: selectedFocusAreas,
     })
@@ -37,12 +38,7 @@ export default function AiRoutinePanel({
     }
 
     setError(null)
-    setIsGenerating(true)
-
-    await new Promise((resolve) => setTimeout(resolve, 800))
-
     onGenerate()
-    setIsGenerating(false)
   }
 
   return (

@@ -6,10 +6,8 @@ import { useMutation } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import AuthDivider from '~/components/auth/AuthDivider'
 import AuthFormField from '~/components/auth/AuthFormField'
 import AuthLayout from '~/components/auth/AuthLayout'
-import GoogleAuthButton from '~/components/auth/GoogleAuthButton'
 import { Button } from '~/components/ui/button'
 import ApplicationRoutes from '~/config/routes'
 import type { ISignupPayload } from '~/lib/interfaces/auth'
@@ -81,10 +79,6 @@ export default function Register() {
         </p>
       }
     >
-      <GoogleAuthButton label="Sign up with Google" />
-
-      <AuthDivider>or sign up with email</AuthDivider>
-
       <form onSubmit={onSubmit} noValidate className="space-y-5">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <AuthFormField

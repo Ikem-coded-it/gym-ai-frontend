@@ -1,19 +1,24 @@
 import { ArrowRight, CalendarBlank, Plus, Sparkle } from '@phosphor-icons/react'
+import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
 import AppHeader from '~/components/global/AppHeader'
+import ExerciseEditDialog from '~/components/onboarding/ExerciseEditDialog'
 import GeneratedExerciseCard from '~/components/onboarding/GeneratedExerciseCard'
 import { Button } from '~/components/ui/button'
 import ApplicationRoutes from '~/config/routes'
-import { AI_GENERATED_EXERCISES } from '~/lib/constants/onboarding'
 import {
   getFocusAreaLabels,
   getSortedTrainingDays,
   getTrainingDayLabel,
   type FocusArea,
   type IExercise,
+  type OnboardingPayload,
   type TrainingDay,
 } from '~/lib/interfaces/onboarding'
+import { buildOnboardingPayload, withExerciseIds } from '~/lib/utils/onboarding'
+import onboardingService from '~/services/onboarding.service'
 import useOnboardingStore from '~/store/zustand/onboarding.zustand'
 
 type OnboardingAiResultProps = {
@@ -39,10 +44,10 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
     : ['full-body', 'core']
 
   const [exercises, setExercises] = useState<IExercise[]>(
-    savedRoutine?.exercises.length
-      ? savedRoutine.exercises
-      : AI_GENERATED_EXERCISES
+    savedRoutine?.exercises ?? []
   )
+  // `null` closed, `{}` adding, `{ exercise }` editing
+  const [dialog, setDialog] = useState<{ exercise?: IExercise } | null>(null)
 
   useEffect(() => {
     if (sortedDays.length === 0) {
@@ -52,31 +57,67 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
 
     if (!sortedDays.includes(day)) {
       navigate({ to: ApplicationRoutes.ONBOARDING.ROUTINE })
+      return
     }
-  }, [day, navigate, sortedDays])
+
+    // Nothing generated for this day (e.g. the page was opened directly).
+    if (!savedRoutine?.exercises.length) {
+      navigate({ to: ApplicationRoutes.ONBOARDING.ROUTINE, search: { tab: 'ai' } })
+    }
+  }, [day, navigate, sortedDays, savedRoutine])
+
+  const regenerateMutation = useMutation({
+    mutationFn: () => onboardingService.generateRoutine({ focus_areas: focusAreas }),
+    onSuccess: (data) => {
+      setExercises(withExerciseIds(data.exercises))
+      toast.success('New routine generated')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+
+  const onboardingMutation = useMutation({
+    mutationFn: (payload: OnboardingPayload) =>
+      onboardingService.createOnboarding(payload),
+    onSuccess: () => {
+      toast.success('Onboarding successful and workouts saved!')
+      navigate({ to: ApplicationRoutes.DASHBOARD.AI_COACH })
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
 
   const handleDeleteExercise = (exercise: IExercise) => {
     setExercises((current) => current.filter((item) => item.id !== exercise.id))
   }
 
-  const handleRegenerate = () => {
-    navigate({
-      to: ApplicationRoutes.ONBOARDING.ROUTINE,
-      search: { tab: 'ai' },
-    })
+  const handleSubmitExercise = (data: Omit<IExercise, 'id'>) => {
+    const editing = dialog?.exercise
+    setExercises((current) =>
+      editing
+        ? current.map((item) =>
+            item.id === editing.id ? { ...item, ...data } : item
+          )
+        : [...current, { id: crypto.randomUUID(), ...data }]
+    )
   }
 
   const handleConfirmRoutine = () => {
-    setDayRoutine(day, {
-      mode: 'ai',
-      exercises,
-      focusAreas,
-    })
+    const routine = { mode: 'ai' as const, exercises, focusAreas }
+    setDayRoutine(day, routine)
 
     const isLastDay = currentDayIndex === sortedDays.length - 1
 
     if (isLastDay) {
-      navigate({ to: ApplicationRoutes.DASHBOARD.AI_COACH })
+      // This is the end of the flow: save every day's routine.
+      onboardingMutation.mutate(
+        buildOnboardingPayload(sortedDays, {
+          ...useOnboardingStore.getState().dayRoutines,
+          [day]: routine,
+        })
+      )
       return
     }
 
@@ -84,6 +125,8 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
     navigate({ to: ApplicationRoutes.ONBOARDING.ROUTINE })
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  const isBusy = regenerateMutation.isPending || onboardingMutation.isPending
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
@@ -99,7 +142,8 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
           Generated Blueprint
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Based on your focus areas ({getFocusAreaLabels(focusAreas)}).
+          Based on your focus areas ({getFocusAreaLabels(focusAreas)}). Review it,
+          edit anything you like, then confirm.
         </p>
 
         <div className="mt-6 space-y-3">
@@ -107,6 +151,7 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
             <GeneratedExerciseCard
               key={exercise.id}
               exercise={exercise}
+              onEdit={(target) => setDialog({ exercise: target })}
               onDelete={handleDeleteExercise}
             />
           ))}
@@ -117,6 +162,8 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
             type="button"
             variant="outline"
             size="lg"
+            disabled={isBusy}
+            onClick={() => setDialog({})}
             className="w-full border-2 border-dashed border-primary/25 bg-transparent text-sm text-primary shadow-none hover:bg-secondary/60"
           >
             <Plus weight="bold" className="size-4" />
@@ -127,24 +174,35 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
             type="button"
             variant="secondary"
             size="lg"
-            onClick={handleRegenerate}
+            disabled={isBusy}
+            onClick={() => regenerateMutation.mutate()}
             className="w-full text-sm"
           >
             <Sparkle weight="fill" className="size-4" />
-            Regenerate
+            {regenerateMutation.isPending ? 'Generating...' : 'Regenerate'}
           </Button>
 
           <Button
             type="button"
             size="lg"
+            disabled={isBusy || exercises.length === 0}
             onClick={handleConfirmRoutine}
             className="w-full"
           >
-            Confirm Routine
+            {onboardingMutation.isPending ? 'Saving...' : 'Confirm Routine'}
             <ArrowRight weight="bold" className="size-4" />
           </Button>
         </div>
       </main>
+
+      <ExerciseEditDialog
+        open={dialog !== null}
+        onOpenChange={(open) => {
+          if (!open) setDialog(null)
+        }}
+        exercise={dialog?.exercise}
+        onSubmit={handleSubmitExercise}
+      />
     </div>
   )
 }

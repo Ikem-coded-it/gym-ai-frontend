@@ -16,36 +16,13 @@ import {
   getSortedTrainingDays,
   getTrainingDayLabel,
   OnboardingPayload,
-  TrainingDay,
   type FocusArea,
   type IExercise,
   type RoutineMode,
 } from '~/lib/interfaces/onboarding'
 import useOnboardingStore, { type DayRoutine } from '~/store/zustand/onboarding.zustand'
 import onboardingService from '~/services/onboarding.service'
-
-const DEMO_EXERCISES: IExercise[] = [
-  {
-    id: '1',
-    exercise: 'Barbell Squat',
-    equipment_name: 'Barbell',
-    sets: [
-      { rep_count: 5, kg_weight: 60 },
-      { rep_count: 5, kg_weight: 60 },
-      { rep_count: 5, kg_weight: 65 },
-    ],
-  },
-  {
-    id: '2',
-    exercise: 'Romanian Deadlift',
-    equipment_name: 'Barbell',
-    sets: [
-      { rep_count: 8, kg_weight: 50 },
-      { rep_count: 8, kg_weight: 50 },
-      { rep_count: 8, kg_weight: 50 },
-    ],
-  },
-]
+import { buildOnboardingPayload, withExerciseIds } from '~/lib/utils/onboarding'
 
 type OnboardingRoutineProps = {
   initialTab?: RoutineMode
@@ -75,9 +52,7 @@ export default function OnboardingRoutine({
     initialTab ?? savedRoutine?.mode ?? 'manual'
   )
   const [exercises, setExercises] = useState<IExercise[]>(
-    savedRoutine?.exercises.length
-      ? savedRoutine.exercises
-      : DEMO_EXERCISES
+savedRoutine?.exercises ?? []
   )
   const [focusAreas, setFocusAreas] = useState<FocusArea[]>(
     savedRoutine?.focusAreas.length
@@ -114,9 +89,7 @@ export default function OnboardingRoutine({
       if (!initialTab) {
         setMode(routine.mode)
       }
-      setExercises(
-        routine.exercises.length ? routine.exercises : DEMO_EXERCISES
-      )
+      setExercises(routine.exercises)
       setFocusAreas(
         routine.focusAreas.length ? routine.focusAreas : ['full-body', 'core']
       )
@@ -124,10 +97,41 @@ export default function OnboardingRoutine({
       if (!initialTab) {
         setMode('manual')
       }
-      setExercises(DEMO_EXERCISES)
+      setExercises([])
       setFocusAreas(['full-body', 'core'])
     }
   }, [currentDay, dayRoutines, initialTab])
+
+  const onboardingMutation = useMutation({
+    mutationFn: (payload: OnboardingPayload) => onboardingService.createOnboarding(payload),
+    onSuccess: () => {
+      toast.success('Onboarding successful and workouts saved!')
+      navigate({ to: ApplicationRoutes.DASHBOARD.AI_COACH })
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+
+  const generateMutation = useMutation({
+    mutationFn: (areas: FocusArea[]) =>
+      onboardingService.generateRoutine({ focus_areas: areas }),
+    onSuccess: (data, areas) => {
+      if (!currentDay) return
+      setDayRoutine(currentDay, {
+        mode: 'ai',
+        exercises: withExerciseIds(data.exercises),
+        focusAreas: areas,
+      })
+      navigate({
+        to: ApplicationRoutes.ONBOARDING.AI_RESULT,
+        search: { day: currentDay },
+      })
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
 
   if (!currentDay) {
     return null
@@ -172,56 +176,6 @@ export default function OnboardingRoutine({
 
   const previousDay = currentDayIndex > 0 ? sortedDays[currentDayIndex - 1] : null
 
-  const handleGenerateRoutine = () => {
-    persistCurrentDay({ mode: 'ai', focusAreas })
-
-    navigate({
-      to: ApplicationRoutes.ONBOARDING.AI_RESULT,
-      search: { day: currentDay },
-    })
-  }
-
-  function buildOnboardingPayload(
-    routines: Partial<Record<TrainingDay, DayRoutine>>,
-  ): OnboardingPayload {
-    return {
-      workouts: sortedDays.map((day) => {
-        const routine = routines[day]
-        if (!routine) {
-          throw new Error(`Missing routine for ${day}`)
-        }
-
-        return {
-          workout: {
-            muscle_group: routine.focusAreas.join(','),
-            day,
-          },
-          exercises: routine.exercises.map((exercise) => ({
-            exercise: exercise.exercise,
-            equipment_name: exercise.equipment_name || null,
-            sets: exercise.sets.map((set) => ({
-              rep_count: set.rep_count,
-              kg_weight: set.kg_weight ?? null,
-              notes: set.notes || null,
-            })),
-          })),
-        }
-      }),
-    }
-  }
-
-  const onboardingMutation = useMutation({
-    mutationFn: (payload: OnboardingPayload) => onboardingService.createOnboarding(payload),
-    onSuccess: (_data, variables) => {
-      // console.log('Onboarding created: ', variables)
-      toast.success('Onboarding successful and workouts saved!')
-      navigate({ to: ApplicationRoutes.DASHBOARD.AI_COACH })
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
-
   const handleConfirmAndContinue = () => {
     const currentRoutine: DayRoutine = {
       mode,
@@ -238,7 +192,7 @@ export default function OnboardingRoutine({
         ...useOnboardingStore.getState().dayRoutines,
         [currentDay]: currentRoutine,
       }
-      onboardingMutation.mutate(buildOnboardingPayload(routines))
+      onboardingMutation.mutate(buildOnboardingPayload(sortedDays, routines))
       return
     }
 
@@ -286,7 +240,8 @@ export default function OnboardingRoutine({
               day={currentDay}
               selectedFocusAreas={focusAreas}
               onToggleFocusArea={toggleFocusArea}
-              onGenerate={handleGenerateRoutine}
+              onGenerate={() => generateMutation.mutate(focusAreas)}
+              isGenerating={generateMutation.isPending}
             />
           </TabsContent>
         </Tabs>

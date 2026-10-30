@@ -52,6 +52,16 @@ export interface IExercise {
   sets: IAddExerciseSetPayload[]
 }
 
+/** POST /onboarding/generate-routine body */
+export interface IGenerateRoutinePayload {
+  focus_areas: FocusArea[]
+}
+
+/** POST /onboarding/generate-routine response */
+export interface IGenerateRoutineResponse {
+  exercises: IOnboardingExercisePayload[]
+}
+
 /** Exercise as sent to POST /onboarding/workouts. */
 export interface IOnboardingExercisePayload {
   exercise: string
