@@ -18,6 +18,8 @@ export interface IWorkoutExerciseResponse {
   exercise: string
   equipment_name: string | null
   exercise_sets: IExerciseSetResponse[]
+  /** 0-based place of the exercise in its workout. */
+  position: number
   created_at: string
   updated_at: string
 }

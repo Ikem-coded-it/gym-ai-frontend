@@ -34,6 +34,14 @@ class WorkoutService {
     )
   }
 
+  /** Put the workout's exercises in this order (every exercise id, first to last). */
+  async reorderExercises(workoutId: string, exerciseIds: string[]) {
+    return ApiService.put<IWorkoutExerciseResponse[]>(
+      `/workout/${workoutId}/exercises/order`,
+      { exercise_ids: exerciseIds },
+    )
+  }
+
   async addSet(
     workoutId: string,
     exerciseId: string,

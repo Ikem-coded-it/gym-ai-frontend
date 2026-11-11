@@ -1,4 +1,19 @@
 import { Barbell, Plus } from '@phosphor-icons/react'
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
@@ -7,7 +22,7 @@ import AddExerciseDialog from '~/components/dashboard/AddExerciseDialog'
 import ExerciseSetDialog from '~/components/dashboard/ExerciseSetDialog'
 import DeleteWorkoutConfirmDialog from '~/components/dashboard/DeleteWorkoutConfirmDialog'
 import WorkoutDetailsHeader from '~/components/dashboard/WorkoutDetailsHeader'
-import WorkoutExerciseCard from '~/components/dashboard/WorkoutExerciseCard'
+import SortableWorkoutExerciseCard from '~/components/dashboard/SortableWorkoutExerciseCard'
 import EmptyState from '~/components/global/EmptyState'
 import { Button } from '~/components/ui/button'
 import { Spinner } from '~/components/ui/spinner'
@@ -127,6 +142,38 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
     },
   })
 
+  const reorderExercisesMutation = useMutation({
+    mutationFn: (orderedIds: string[]) =>
+      workoutService.reorderExercises(workoutId, orderedIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: workoutQueryKeys.all })
+    },
+    onError: (error: Error, _orderedIds, previous) => {
+      // Put the list back the way it was and say why.
+      if (previous) setExercises(previous)
+      toast.error(error.message)
+    },
+    onMutate: () => exercises,
+  })
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return
+
+    const from = exercises.findIndex((item) => item.id === active.id)
+    const to = exercises.findIndex((item) => item.id === over.id)
+    if (from === -1 || to === -1) return
+
+    // Show the new order right away; the server confirms (or we roll back).
+    const reordered = arrayMove(exercises, from, to)
+    setExercises(reordered)
+    reorderExercisesMutation.mutate(reordered.map((item) => item.id))
+  }
+
   const workout = useMemo(() => {
     if (!workouts) return undefined
     return findWorkoutDetail(workouts, workoutId)
@@ -191,20 +238,32 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
           </h2>
 
           <div className="mt-3 space-y-3">
-            {exercises.map((exercise) => (
-              <WorkoutExerciseCard
-                key={exercise.id}
-                exercise={exercise}
-                onDelete={setExerciseToDelete}
-                onAddSet={(target) => setSetDialog({ exercise: target })}
-                onEditSet={(target, set) =>
-                  setSetDialog({ exercise: target, set })
-                }
-                onDeleteSet={(target, set) =>
-                  setSetToDelete({ exercise: target, set })
-                }
-              />
-            ))}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={exercises.map((exercise) => exercise.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {exercises.map((exercise) => (
+                  <SortableWorkoutExerciseCard
+                    key={exercise.id}
+                    exercise={exercise}
+                    sortable={exercises.length > 1}
+                    onDelete={setExerciseToDelete}
+                    onAddSet={(target) => setSetDialog({ exercise: target })}
+                    onEditSet={(target, set) =>
+                      setSetDialog({ exercise: target, set })
+                    }
+                    onDeleteSet={(target, set) =>
+                      setSetToDelete({ exercise: target, set })
+                    }
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
 
             {exercises.length === 0 && (
               <EmptyState

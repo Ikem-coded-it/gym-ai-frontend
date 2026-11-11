@@ -1,9 +1,12 @@
 import { Barbell, PencilSimple, Plus, Trash } from '@phosphor-icons/react'
+import type { ReactNode } from 'react'
 import { Card, CardContent, CardTitle } from '~/components/ui/card'
 import type { IExerciseSet, IWorkoutExercise } from '~/lib/interfaces/workout'
 
 type WorkoutExerciseCardProps = {
   exercise: IWorkoutExercise
+  /** Drag handle shown before the exercise icon (see SortableWorkoutExerciseCard). */
+  dragHandle?: ReactNode
   onDelete?: (exercise: IWorkoutExercise) => void
   onAddSet?: (exercise: IWorkoutExercise) => void
   onEditSet?: (exercise: IWorkoutExercise, set: IExerciseSet) => void
@@ -17,6 +20,7 @@ function formatSetStats(set: IExerciseSet) {
 
 export default function WorkoutExerciseCard({
   exercise,
+  dragHandle,
   onDelete,
   onAddSet,
   onEditSet,
@@ -30,6 +34,7 @@ export default function WorkoutExerciseCard({
     <Card className="py-0">
       <CardContent className="space-y-3 px-3 py-3">
         <div className="flex items-center gap-3">
+          {dragHandle}
           <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-secondary">
             <Barbell className="size-5 text-primary" weight="fill" />
           </div>
