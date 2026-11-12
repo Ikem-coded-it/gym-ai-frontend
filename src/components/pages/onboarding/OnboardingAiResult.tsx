@@ -3,7 +3,8 @@ import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import AppHeader from '~/components/global/AppHeader'
+import OnboardingProgress from '~/components/onboarding/OnboardingProgress'
+import OnboardingTopBar from '~/components/onboarding/OnboardingTopBar'
 import ExerciseEditDialog from '~/components/onboarding/ExerciseEditDialog'
 import GeneratedExerciseCard from '~/components/onboarding/GeneratedExerciseCard'
 import { Button } from '~/components/ui/button'
@@ -130,7 +131,9 @@ export default function OnboardingAiResult({ day }: OnboardingAiResultProps) {
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      <AppHeader />
+      <OnboardingTopBar>
+        <OnboardingProgress currentStep={2} totalSteps={2} />
+      </OnboardingTopBar>
 
       <main className="mx-auto w-full max-w-md flex-1 px-6 py-6">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-primary">

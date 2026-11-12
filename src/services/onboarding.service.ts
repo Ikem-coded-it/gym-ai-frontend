@@ -10,6 +10,10 @@ class OnboardingService {
         return ApiService.post(`/onboarding/workouts`, payload);
     }
 
+    async skipOnboarding() {
+        return ApiService.post(`/onboarding/skip`, {});
+    }
+
     async generateRoutine(payload: IGenerateRoutinePayload) {
         return ApiService.post<IGenerateRoutineResponse>(
             `/onboarding/generate-routine`,

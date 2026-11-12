@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
 import netlify from '@netlify/vite-plugin-tanstack-start'
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   server: {
     port: 3000,
   },
@@ -13,7 +13,10 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   plugins: [
-    netlify(),
+    // Netlify's plugin prepares the build for deployment. In `vite dev` it also starts
+    // Netlify Dev, which calls the Netlify API on every start (the site is linked) and
+    // stops the server if that request fails, so only use it for builds.
+    command === 'build' ? netlify() : null,
     tailwindcss(),
     tanstackStart({
       srcDirectory: 'src',
@@ -21,4 +24,4 @@ export default defineConfig({
     viteReact(),
     nitro(),
   ],
-})
+}))

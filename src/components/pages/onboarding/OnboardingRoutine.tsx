@@ -253,6 +253,7 @@ savedRoutine?.exercises ?? []
             type="button"
             size="lg"
             onClick={handleConfirmAndContinue}
+            disabled={exercises.length === 0 || onboardingMutation.isPending}
             className="w-full"
           >
             Confirm &amp; Continue
