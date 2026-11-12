@@ -7,6 +7,7 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import * as React from 'react'
 import AppProviders from '~/components/global/AppProviders'
+import InstallAppPrompt from '~/components/global/InstallAppPrompt'
 import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary'
 import { NotFound } from '~/components/NotFound'
 import { Toaster } from '~/components/ui/sonner'
@@ -83,6 +84,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <AppProviders>
           {children}
           <Toaster richColors toastOptions={{duration: 3000}}/>
+          <InstallAppPrompt />
           <TanStackRouterDevtools position="bottom-right" />
         </AppProviders>
         <Scripts />
