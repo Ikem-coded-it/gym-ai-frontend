@@ -4,6 +4,7 @@ import BrandMark from '~/components/global/BrandMark'
 import ChatPreview from '~/components/landing/ChatPreview'
 import LandingHeader from '~/components/landing/LandingHeader'
 import PlanPreview from '~/components/landing/PlanPreview'
+import Reveal from '~/components/landing/Reveal'
 import WorkoutPreview from '~/components/landing/WorkoutPreview'
 import { Button } from '~/components/ui/button'
 import ApplicationRoutes from '~/config/routes'
@@ -27,6 +28,10 @@ function SignUpButton({ children }: { children: string }) {
   )
 }
 
+/** Fade-and-rise entrance that plays once when the page loads. */
+const ENTER =
+  'animate-in fade-in slide-in-from-bottom-4 duration-700 [animation-fill-mode:backwards] motion-reduce:animate-none'
+
 export default function Landing() {
   return (
     <div className="min-h-dvh bg-background">
@@ -41,19 +46,28 @@ export default function Landing() {
           />
           <div className="relative mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-14 sm:px-6 md:grid-cols-[1.1fr_1fr] md:py-24">
             <div>
-              <p className="inline-flex rounded-full bg-secondary px-3 py-1 text-xs font-semibold tracking-wider text-primary uppercase">
+              <p className={`${ENTER} inline-flex rounded-full bg-secondary px-3 py-1 text-xs font-semibold tracking-wider text-primary uppercase`}>
                 AI-powered strength training
               </p>
-              <h1 className="mt-5 font-heading text-5xl leading-[1.05] text-balance text-foreground sm:text-6xl">
+              <h1
+                style={{ animationDelay: '100ms' }}
+                className={`${ENTER} mt-5 font-heading text-5xl leading-[1.05] text-balance text-foreground sm:text-6xl`}
+              >
                 Your gym coach, in your pocket
               </h1>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+              <p
+                style={{ animationDelay: '200ms' }}
+                className={`${ENTER} mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground`}
+              >
                 Chat with GymAI to plan your week, build workouts for the
                 muscles you want to train, and log every set. No spreadsheets,
                 no guesswork.
               </p>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div
+                style={{ animationDelay: '300ms' }}
+                className={`${ENTER} mt-8 flex flex-col gap-3 sm:flex-row sm:items-center`}
+              >
                 <SignUpButton>Get started</SignUpButton>
                 <Button
                   render={<Link to={ApplicationRoutes.AUTH.LOGIN} />}
@@ -66,13 +80,21 @@ export default function Landing() {
                 </Button>
               </div>
 
-              <p className="mt-5 text-sm text-muted-foreground">
+              <p
+                style={{ animationDelay: '400ms' }}
+                className={`${ENTER} mt-5 text-sm text-muted-foreground`}
+              >
                 Works in your browser and installs to your home screen.
               </p>
             </div>
 
-            <div className="flex justify-center md:justify-end">
-              <ChatPreview />
+            <div
+              style={{ animationDelay: '250ms' }}
+              className="flex animate-in justify-center duration-1000 [animation-fill-mode:backwards] fade-in slide-in-from-right-16 motion-reduce:animate-none md:justify-end"
+            >
+              <div className="animate-float motion-reduce:animate-none">
+                <ChatPreview />
+              </div>
             </div>
           </div>
         </section>
@@ -84,7 +106,7 @@ export default function Landing() {
         >
           <div className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,var(--color-secondary),var(--color-background))] px-6 py-12 ring-1 ring-foreground/5 sm:px-12 md:py-16">
             <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr]">
-              <div>
+              <Reveal direction="left">
                 <div className="flex items-center gap-3">
                   <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold tracking-wider text-primary-foreground uppercase">
                     AI coach
@@ -116,11 +138,15 @@ export default function Landing() {
                 <div className="mt-8">
                   <SignUpButton>Meet your coach</SignUpButton>
                 </div>
-              </div>
+              </Reveal>
 
               <div className="flex justify-center gap-5 lg:justify-end">
-                <WorkoutPreview />
-                <PlanPreview />
+                <Reveal direction="right">
+                  <WorkoutPreview />
+                </Reveal>
+                <Reveal direction="right" delay={180}>
+                  <PlanPreview />
+                </Reveal>
               </div>
             </div>
           </div>
@@ -128,7 +154,7 @@ export default function Landing() {
 
         {/* Feature grid */}
         <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-          <div className="max-w-2xl">
+          <Reveal className="max-w-2xl">
             <h2 className="font-heading text-4xl leading-tight text-balance text-foreground sm:text-5xl">
               Built for the way you actually train
             </h2>
@@ -136,23 +162,24 @@ export default function Landing() {
               The small details that make logging a workout quick enough to do
               between sets.
             </p>
-          </div>
+          </Reveal>
 
           <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {LANDING_FEATURES.map((feature) => (
-              <li
-                key={feature.title}
-                className="rounded-3xl bg-card p-6 shadow-card ring-1 ring-foreground/5"
-              >
-                <span className="flex size-11 items-center justify-center rounded-2xl bg-secondary text-primary">
-                  <feature.icon weight="fill" className="size-6" />
-                </span>
-                <h3 className="mt-4 text-lg font-semibold text-foreground">
-                  {feature.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {feature.description}
-                </p>
+            {LANDING_FEATURES.map((feature, index) => (
+              <li key={feature.title}>
+                <Reveal delay={(index % 3) * 100} className="h-full">
+                  <div className="h-full rounded-3xl bg-card p-6 shadow-card ring-1 ring-foreground/5 transition-[translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-float">
+                    <span className="flex size-11 items-center justify-center rounded-2xl bg-secondary text-primary">
+                      <feature.icon weight="fill" className="size-6" />
+                    </span>
+                    <h3 className="mt-4 text-lg font-semibold text-foreground">
+                      {feature.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {feature.description}
+                    </p>
+                  </div>
+                </Reveal>
               </li>
             ))}
           </ul>
@@ -163,24 +190,28 @@ export default function Landing() {
           id="how-it-works"
           className="mx-auto w-full max-w-6xl scroll-mt-20 px-4 pb-16 sm:px-6 md:pb-24"
         >
-          <h2 className="font-heading text-4xl leading-tight text-balance text-foreground sm:text-5xl">
-            Up and training in three steps
-          </h2>
+          <Reveal>
+            <h2 className="font-heading text-4xl leading-tight text-balance text-foreground sm:text-5xl">
+              Up and training in three steps
+            </h2>
+          </Reveal>
 
           <ol className="mt-12 grid gap-8 md:grid-cols-3">
             {LANDING_STEPS.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground shadow-card">
-                  {index + 1}
-                </span>
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">
-                    {step.title}
-                  </h3>
-                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    {step.description}
-                  </p>
-                </div>
+              <li key={step.title}>
+                <Reveal delay={index * 120} className="flex gap-4">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground shadow-card">
+                    {index + 1}
+                  </span>
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      {step.title}
+                    </h3>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                      {step.description}
+                    </p>
+                  </div>
+                </Reveal>
               </li>
             ))}
           </ol>
@@ -188,7 +219,7 @@ export default function Landing() {
 
         {/* Closing call to action */}
         <section className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6 md:pb-24">
-          <div className="rounded-[2rem] bg-primary px-6 py-14 text-center text-primary-foreground sm:px-12">
+          <Reveal className="rounded-[2rem] bg-primary px-6 py-14 text-center text-primary-foreground sm:px-12">
             <h2 className="font-heading text-4xl leading-tight text-balance sm:text-5xl">
               Ready for your first session?
             </h2>
@@ -207,7 +238,7 @@ export default function Landing() {
                 <ArrowRight weight="bold" className="size-4" />
               </Button>
             </div>
-          </div>
+          </Reveal>
         </section>
       </main>
 
