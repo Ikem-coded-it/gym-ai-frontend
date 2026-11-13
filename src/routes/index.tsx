@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import Welcome from '~/components/pages/Welcome'
+import Landing from '~/components/pages/Landing'
 
 export const Route = createFileRoute('/')({
-  component: Welcome,
+  component: Landing,
 })

@@ -2,6 +2,7 @@ import { Barbell, PencilSimple, Plus, Trash } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
 import { Card, CardContent, CardTitle } from '~/components/ui/card'
 import type { IExerciseSet, IWorkoutExercise } from '~/lib/interfaces/workout'
+import { formatSetEffort } from '~/lib/utils/exercise-sets'
 
 type WorkoutExerciseCardProps = {
   exercise: IWorkoutExercise
@@ -14,8 +15,11 @@ type WorkoutExerciseCardProps = {
 }
 
 function formatSetStats(set: IExerciseSet) {
-  const reps = set.reps === null ? '— reps' : `${set.reps} reps`
-  return set.weightKg && set.weightKg > 0 ? `${reps} × ${set.weightKg}kg` : reps
+  const effort = formatSetEffort({
+    rep_count: set.reps,
+    duration_seconds: set.durationSeconds,
+  })
+  return set.weightKg && set.weightKg > 0 ? `${effort} × ${set.weightKg}kg` : effort
 }
 
 export default function WorkoutExerciseCard({

@@ -24,6 +24,7 @@ type ExerciseSetDialogProps = {
 
 const emptyValues = {
   rep_count: undefined,
+  duration_seconds: undefined,
   kg_weight: undefined,
   notes: '',
 } as unknown as ExerciseSetFormData
@@ -31,7 +32,8 @@ const emptyValues = {
 function valuesFor(set?: IExerciseSet | null): ExerciseSetFormData {
   if (!set) return emptyValues
   return {
-    rep_count: set.reps ?? (undefined as unknown as number),
+    rep_count: set.reps ?? undefined,
+    duration_seconds: set.durationSeconds ?? undefined,
     kg_weight: set.weightKg ?? undefined,
     notes: set.notes ?? '',
   }
@@ -129,7 +131,10 @@ export default function ExerciseSetDialog({
         </div>
 
         <form onSubmit={submit} className="mt-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <p className="text-sm text-muted-foreground">
+            Enter reps, a time for holds like a plank, or both.
+          </p>
+          <div className="grid grid-cols-3 gap-3">
             <FormField
               id="set-reps"
               label="Reps"
@@ -137,6 +142,17 @@ export default function ExerciseSetDialog({
               placeholder="10"
               error={errors.rep_count}
               registration={register('rep_count', {
+                setValueAs: (value) =>
+                  value === '' || value == null ? undefined : Number(value),
+              })}
+            />
+            <FormField
+              id="set-duration"
+              label="Time (sec)"
+              type="number"
+              placeholder="60"
+              error={errors.duration_seconds}
+              registration={register('duration_seconds', {
                 setValueAs: (value) =>
                   value === '' || value == null ? undefined : Number(value),
               })}

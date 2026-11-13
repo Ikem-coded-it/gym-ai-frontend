@@ -6,6 +6,8 @@ export interface IExerciseSetResponse {
   workout_exercise_id: string
   rep_count: number | null
   kg_weight: number | null
+  /** Seconds held, for timed exercises such as a plank. */
+  duration_seconds: number | null
   notes: string | null
   created_at: string
   updated_at: string
@@ -26,7 +28,9 @@ export interface IWorkoutExerciseResponse {
 
 /** POST /workout/{id}/exercises/{exerciseId}/sets body */
 export interface IAddExerciseSetPayload {
-  rep_count: number
+  /** A set needs reps, a duration, or both. */
+  rep_count?: number | null
+  duration_seconds?: number | null
   kg_weight?: number | null
   notes?: string | null
 }
@@ -81,6 +85,7 @@ export interface IWorkoutSession {
 export interface IExerciseSet {
   id: string
   reps: number | null
+  durationSeconds: number | null
   weightKg: number | null
   notes: string | null
 }

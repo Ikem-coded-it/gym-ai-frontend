@@ -172,6 +172,9 @@ export default function ChatExerciseFormComposer({
           </div>
 
           <div className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              Each set needs reps, a time for holds like a plank, or both.
+            </p>
             {row.sets.map((set, setIndex) => (
               <div
                 key={`exercise-${index}-set-${setIndex}`}
@@ -194,7 +197,7 @@ export default function ChatExerciseFormComposer({
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1.5">
                     <Label
                       htmlFor={`exercise-${index}-set-${setIndex}-reps`}
@@ -207,10 +210,32 @@ export default function ChatExerciseFormComposer({
                       type="number"
                       min={1}
                       disabled={disabled}
+                      placeholder="10"
                       value={set.rep_count ?? ''}
                       onChange={(event) =>
                         updateSet(index, setIndex, {
                           rep_count: parseRepsInput(event.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor={`exercise-${index}-set-${setIndex}-time`}
+                      className="text-xs text-muted-foreground"
+                    >
+                      Time (sec)
+                    </Label>
+                    <Input
+                      id={`exercise-${index}-set-${setIndex}-time`}
+                      type="number"
+                      min={1}
+                      disabled={disabled}
+                      placeholder="60"
+                      value={set.duration_seconds ?? ''}
+                      onChange={(event) =>
+                        updateSet(index, setIndex, {
+                          duration_seconds: parseRepsInput(event.target.value),
                         })
                       }
                     />

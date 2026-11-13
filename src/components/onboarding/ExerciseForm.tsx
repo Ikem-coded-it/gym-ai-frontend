@@ -14,7 +14,7 @@ const toOptionalNumber = (value: unknown) =>
   value === '' || value == null ? undefined : Number(value)
 
 const emptySet = () =>
-  ({ rep_count: 10, kg_weight: undefined, notes: '' }) as ManualExerciseFormData['sets'][number]
+  ({ rep_count: 10, duration_seconds: undefined, kg_weight: undefined, notes: '' }) as ManualExerciseFormData['sets'][number]
 
 const emptyExercise = (): ManualExerciseFormData => ({
   exercise: '',
@@ -29,7 +29,8 @@ function toFormValues(exercise?: IExercise | null): ManualExerciseFormData {
     equipment_name: exercise.equipment_name ?? '',
     sets: exercise.sets.length
       ? exercise.sets.map((set) => ({
-          rep_count: set.rep_count,
+          rep_count: set.rep_count ?? undefined,
+          duration_seconds: set.duration_seconds ?? undefined,
           kg_weight: set.kg_weight ?? undefined,
           notes: set.notes ?? '',
         }))
@@ -79,6 +80,7 @@ export default function ExerciseForm({
       equipment_name: data.equipment_name,
       sets: data.sets.map((set) => ({
         rep_count: set.rep_count,
+        duration_seconds: set.duration_seconds,
         kg_weight: set.kg_weight ?? null,
         notes: set.notes || null,
       })),
@@ -105,7 +107,12 @@ export default function ExerciseForm({
       />
 
       <div className="space-y-3">
-        <p className="text-[13px] font-medium text-foreground/80">Sets</p>
+        <div>
+          <p className="text-[13px] font-medium text-foreground/80">Sets</p>
+          <p className="text-xs text-muted-foreground">
+            Enter reps, a time for holds like a plank, or both.
+          </p>
+        </div>
         {fields.map((field, index) => (
           <div key={field.id} className="space-y-3 rounded-xl bg-muted/60 p-3">
             <div className="flex items-center justify-between">
@@ -123,7 +130,7 @@ export default function ExerciseForm({
                 </button>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               <FormField
                 id={`${idPrefix}-set-${index}-reps`}
                 label="Reps"
@@ -131,6 +138,16 @@ export default function ExerciseForm({
                 placeholder="8"
                 error={errors.sets?.[index]?.rep_count}
                 registration={register(`sets.${index}.rep_count`, {
+                  setValueAs: toOptionalNumber,
+                })}
+              />
+              <FormField
+                id={`${idPrefix}-set-${index}-duration`}
+                label="Time (sec)"
+                type="number"
+                placeholder="60"
+                error={errors.sets?.[index]?.duration_seconds}
+                registration={register(`sets.${index}.duration_seconds`, {
                   setValueAs: toOptionalNumber,
                 })}
               />

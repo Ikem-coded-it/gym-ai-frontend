@@ -38,7 +38,8 @@ export function buildOnboardingPayload(
           exercise: exercise.exercise,
           equipment_name: exercise.equipment_name || null,
           sets: exercise.sets.map((set) => ({
-            rep_count: set.rep_count,
+            rep_count: set.rep_count ?? null,
+            duration_seconds: set.duration_seconds ?? null,
             kg_weight: set.kg_weight ?? null,
             notes: set.notes || null,
           })),

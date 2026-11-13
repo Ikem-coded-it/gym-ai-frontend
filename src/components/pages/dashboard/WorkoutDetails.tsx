@@ -104,13 +104,15 @@ export default function WorkoutDetails({ workoutId }: WorkoutDetailsProps) {
       const { exercise, set } = setDialog
       if (set) {
         return workoutService.updateSet(workoutId, exercise.id, set.id, {
-          rep_count: data.rep_count,
+          rep_count: data.rep_count ?? null,
+          duration_seconds: data.duration_seconds ?? null,
           kg_weight: data.kg_weight ?? null,
           notes: data.notes || null,
         })
       }
       return workoutService.addSet(workoutId, exercise.id, {
-        rep_count: data.rep_count,
+        rep_count: data.rep_count ?? null,
+        duration_seconds: data.duration_seconds ?? null,
         kg_weight: data.kg_weight ?? null,
         notes: data.notes || null,
       })

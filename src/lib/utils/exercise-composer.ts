@@ -3,6 +3,8 @@ import type { IComposerExercise } from '~/lib/interfaces/chat-composer'
 export type SetDraftRow = {
   /** `null` = not filled in yet. */
   rep_count: number | null
+  /** Seconds held, for timed exercises. `null` = not timed. */
+  duration_seconds: number | null
   /** `null` = bodyweight (0 kg). */
   kg_weight: number | null
   notes: string
@@ -15,7 +17,7 @@ export type ExerciseDraftRow = {
 }
 
 export function createEmptySetRow(): SetDraftRow {
-  return { rep_count: null, kg_weight: null, notes: '' }
+  return { rep_count: null, duration_seconds: null, kg_weight: null, notes: '' }
 }
 
 export function createEmptyExerciseRow(): ExerciseDraftRow {
@@ -45,7 +47,13 @@ export function formatExerciseBlock(row: ExerciseDraftRow): string {
   const header = equipment ? `${name} (${equipment})` : name
   const lines = row.sets.map((set, index) => {
     const notes = set.notes.trim()
-    return `Set ${index + 1}: ${set.rep_count} reps @ ${resolveKgWeight(set)}kg${
+    const effort = [
+      set.rep_count ? `${set.rep_count} reps` : null,
+      set.duration_seconds ? `${set.duration_seconds} seconds` : null,
+    ]
+      .filter(Boolean)
+      .join(', ')
+    return `Set ${index + 1}: ${effort} @ ${resolveKgWeight(set)}kg${
       notes ? ` — ${notes}` : ''
     }`
   })
@@ -63,7 +71,12 @@ export function isSetRowComplete(set: SetDraftRow): boolean {
       !Number.isNaN(set.kg_weight) &&
       set.kg_weight >= 0)
 
-  return typeof set.rep_count === 'number' && set.rep_count > 0 && weightOk
+  const hasReps = typeof set.rep_count === 'number' && set.rep_count > 0
+  const hasDuration =
+    typeof set.duration_seconds === 'number' && set.duration_seconds > 0
+
+  // A set needs reps, a time, or both.
+  return (hasReps || hasDuration) && weightOk
 }
 
 export function isExerciseRowComplete(row: ExerciseDraftRow): boolean {
@@ -90,6 +103,10 @@ export function composerExercisesToRows(
     sets: exercise.sets.length
       ? exercise.sets.map((set) => ({
           rep_count: set.rep_count > 0 ? set.rep_count : null,
+          duration_seconds:
+            set.duration_seconds && set.duration_seconds > 0
+              ? set.duration_seconds
+              : null,
           kg_weight: set.kg_weight == null || set.kg_weight === 0 ? null : set.kg_weight,
           notes: set.notes ?? '',
         }))

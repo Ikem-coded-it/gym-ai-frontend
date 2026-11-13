@@ -60,6 +60,7 @@ function mapExerciseToUi(exercise: IWorkoutExerciseResponse): IWorkoutExercise {
     sets: exercise.exercise_sets.map((set) => ({
       id: set.id,
       reps: set.rep_count,
+      durationSeconds: set.duration_seconds,
       weightKg: set.kg_weight,
       notes: set.notes,
     })),

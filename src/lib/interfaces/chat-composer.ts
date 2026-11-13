@@ -13,7 +13,10 @@ export interface IComposerOption {
 }
 
 export interface IComposerSet {
+  /** 0 for a timed hold. */
   rep_count: number
+  /** Seconds held, for timed exercises such as a plank. */
+  duration_seconds?: number | null
   kg_weight?: number | null
   notes?: string | null
 }
